@@ -5,4 +5,4 @@ graphs/
 __pycache__/
 nohup.out
 **/*main*.py
-!**/mainExample.py
+!**/MainExample.py
