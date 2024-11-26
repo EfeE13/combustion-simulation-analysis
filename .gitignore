@@ -1,0 +1,8 @@
+data_storage/
+inputs_pdrs/
+outputs_pdrs/
+graphs/
+__pycache__/
+nohup.out
+**/*main*.py
+!**/mainExample.py
