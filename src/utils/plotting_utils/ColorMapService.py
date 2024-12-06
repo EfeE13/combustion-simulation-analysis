@@ -2,13 +2,18 @@ import numpy as np
 from typing import Optional
 import matplotlib.tri as tri
 import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
+from matplotlib import cm
 
 DECIMAL_PLACES_PRINTING = 4
 PRINT_CONTINUOUS_COLOR_MAP = True
 CMAP_CONTINUOUS_COLOR_MAP = "RdBu_r"
 CMAP_NON_CONTINUOUS_COLOR_MAP = "RdBu_r"
-DEFAULT_DOT_SIZE = 2
+DEFAULT_DOT_SIZE = 15
+DOT_BORDER_WIDTH = 1.01
 CMAP_SHAPE_ORDER = ['^', 's', '*', 'X', 'v', 'D']
+
+FONT_SIZE = 19
 
 class ColorMapService:
     def __init__(self, triplesToColorPlot:list[list[float]]) -> None:
@@ -70,7 +75,7 @@ class ColorMapService:
         if titleLabel != None:
             axObj.set_title(titleLabel)
 
-    def makeColorPlotNonContinuous(self, axObj, xAxisLabel:str, yAxisLabel:str, titleLabel:str, colorbarLabel:str, dotSize:float = None, 
+    def makeColorPlotNonContinuous(self, axObj, xAxisLabel:str, yAxisLabel:str, titleLabel:str, colorbarLabel:str, increasedDotSize:float = None, 
                                    diffShapes:bool = False, diffShapesIndices:list[list[int]] = None, diffShapesLegend:list[str] = None, 
                                    vMin:float = None, vMax:float = None) -> None:
         """Makes plot of colored dots
@@ -80,13 +85,14 @@ class ColorMapService:
         :param str yAxisLabel: y-axis label
         :param str titleLabel: title label
         :param str colorbarLabel: colorbar label
-        :param float dotSize: size of dot, defaults to None
+        :param float increasedDotSize: increased size of dot, defaults to None
         :param bool diffShapes: whether or not to have different dots be different shapes, defaults to False
         :param list[list[int]] diffShapesIndices: each of the sublists contains the indices to be assignned a certain shape I believe, defaults to None
         :param list[str] diffShapesLegend: for making the legend of the different shapes, defaults to None
         :param float vMin: lower cap for coloring, defaults to None
         :param float vMax: upper cap for coloring, defaults to None
         """
+        plt.rcParams.update({'font.size': FONT_SIZE})
         
         diffShapesIndicesProvided = diffShapesIndices is not None
         diffShapesLegendProvided = diffShapesLegend is not None
@@ -97,11 +103,14 @@ class ColorMapService:
         yList = [tripleToColorPlot[1] for tripleToColorPlot in self.triplesToColorPlot]
         zList = [tripleToColorPlot[2] for tripleToColorPlot in self.triplesToColorPlot]
 
-        if dotSize == None:
-            dotSize = DEFAULT_DOT_SIZE
+        if increasedDotSize == None:
+            increasedDotSize = 0
         
         if not diffShapes:
-            c = axObj.scatter(xList, yList, c = zList, s = dotSize, cmap = CMAP_NON_CONTINUOUS_COLOR_MAP, vmin = vMin, vmax = vMax)
+            # TODO: remove +10 from dotSize in line below
+            norm = plt.Normalize(vmin=vMin, vmax=vMax)  # Normalize z values
+            edge_colors = cm.RdBu_r(norm(zList))
+            c = axObj.scatter(xList, yList, s = DEFAULT_DOT_SIZE + increasedDotSize, facecolors = "none", edgecolors = edge_colors, linewidths = DOT_BORDER_WIDTH)
         else:
             if vMin != None:
                 vminVal = vMin
@@ -119,13 +128,16 @@ class ColorMapService:
                 yListForShape = [yList[i] for i in shapeIndices]
                 zListForShape = [zList[i] for i in shapeIndices]
 
-                c = axObj.scatter(xListForShape, yListForShape, c = zListForShape, marker = CMAP_SHAPE_ORDER[shapeCounter], label = diffShapesLegend[shapeCounter], s = dotSize, cmap = CMAP_NON_CONTINUOUS_COLOR_MAP, vmin = vminVal, vmax = vmaxVal)
+                norm = plt.Normalize(vmin=vminVal, vmax=vmaxVal)  # Normalize z values
+                edge_colors = cm.RdBu_r(norm(zListForShape))
+                c = axObj.scatter(xListForShape, yListForShape, marker = CMAP_SHAPE_ORDER[shapeCounter], label = diffShapesLegend[shapeCounter], s = DEFAULT_DOT_SIZE + increasedDotSize, facecolors = "none", edgecolors = edge_colors, linewidths = DOT_BORDER_WIDTH)
                 shapeCounter += 1
             axObj.legend()
 
         pos = axObj.get_position()
         cax = axObj.get_figure().add_axes([pos.x1 + 0.01, pos.y0, 0.01, pos.height])
-        cbar = axObj.get_figure().colorbar(c, cax=cax)
+        
+        cbar = axObj.get_figure().colorbar(cm.ScalarMappable(norm = norm, cmap = CMAP_NON_CONTINUOUS_COLOR_MAP), cax = cax)
         if colorbarLabel != None:
             cbar.set_label(colorbarLabel)
 
@@ -133,3 +145,10 @@ class ColorMapService:
         axObj.set_ylabel(yAxisLabel)
         if titleLabel != None:
             axObj.set_title(titleLabel)
+
+        # Fixes overlapping x-tick labels for the base-10 log of abs. difference in Q2DF2 and Q2DF3
+        # predictions where both models are valid but Q2DF1 is not:
+        if colorbarLabel == "$\log_{10}|Y_{CO}(Q2DF2) - Y_{CO}(Q2DF3)|$ ":
+            xTickLabels = ["0.07", "0.075", "0.08", "0.085"]
+            axObj.set_xticks([float(elm) for elm in xTickLabels])
+            axObj.set_xticklabels(xTickLabels)

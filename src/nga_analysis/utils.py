@@ -36,7 +36,7 @@ def findChiZAtZSt(ZVals:list[float], chiZAtZ:list[float], ZStVals:list[float]) -
 
 def makeAndSaveFigure(timeStep, xVar:str, yVar:str, xAxisLabel:str, yAxisLabel:str, colorbarLabel:str, figureFileLoc:str, zVar:str = None, zList:list[float] = None,
                       titleLabel:str = None, zMinVal:float = float("-inf"), zMaxVal:float = float("inf"), plotLogX:bool = False, 
-                      plotLogY:bool = False, plotLogZ:bool = False, dotSize:float = None, diffShapes = False, diffShapesLegend:list[str] = None) -> None:
+                      plotLogY:bool = False, plotLogZ:bool = False, increasedDotSize:float = None, diffShapes = False, diffShapesLegend:list[str] = None) -> None:
     """Making and saving figure
 
     :param _type_ timeStep: TimeStep object
@@ -54,7 +54,7 @@ def makeAndSaveFigure(timeStep, xVar:str, yVar:str, xAxisLabel:str, yAxisLabel:s
     :param bool plotLogX: to plot x-axis logarithmically, defaults to False
     :param bool plotLogY: to plot xy-axis logarithmically, defaults to False
     :param bool plotLogZ: to plot color logarithmically, defaults to False
-    :param float dotSize: size of dots, defaults to None
+    :param float increasedDotSize: size to increase dots, defaults to None
     :param bool diffShapes: whether or not to have different dots be different shapes, defaults to False
     :param list[str] diffShapesLegend: for making the legend of the different shapes, defaults to None
     """
@@ -62,9 +62,9 @@ def makeAndSaveFigure(timeStep, xVar:str, yVar:str, xAxisLabel:str, yAxisLabel:s
         titleLabel = colorbarLabel
 
     dataVisObj = DataPlot(1, 1)
-    timeStep.makeHeatMap(dataVisObj.getFreeSubplot(), xVar, yVar, xAxisLabel, yAxisLabel, titleLabel, colorbarLabel, zVar = zVar, zList = zList, zMinVal = zMinVal, zMaxVal = zMaxVal, plotLogX = plotLogX, plotLogY = plotLogY, plotLogZ = plotLogZ, dotSize = dotSize, diffShapes = diffShapes, diffShapesLegend = diffShapesLegend)
+    timeStep.makeHeatMap(dataVisObj.getFreeSubplot(), xVar, yVar, xAxisLabel, yAxisLabel, titleLabel, colorbarLabel, zVar = zVar, zList = zList, zMinVal = zMinVal, zMaxVal = zMaxVal, plotLogX = plotLogX, plotLogY = plotLogY, plotLogZ = plotLogZ, increasedDotSize = increasedDotSize, diffShapes = diffShapes, diffShapesLegend = diffShapesLegend)
     dataVisObj.saveFigure(figureFileLoc[:figureFileLoc.rindex(".")] + "Title" + figureFileLoc[figureFileLoc.rindex("."):], 500)
 
     dataVisObj = DataPlot(1, 1)
-    timeStep.makeHeatMap(dataVisObj.getFreeSubplot(), xVar, yVar, xAxisLabel, yAxisLabel, "", colorbarLabel, zVar = zVar, zList = zList, zMinVal = zMinVal, zMaxVal = zMaxVal, plotLogX = plotLogX, plotLogY = plotLogY, plotLogZ = plotLogZ, dotSize = dotSize, diffShapes = diffShapes, diffShapesLegend = diffShapesLegend)
+    timeStep.makeHeatMap(dataVisObj.getFreeSubplot(), xVar, yVar, xAxisLabel, yAxisLabel, "", colorbarLabel, zVar = zVar, zList = zList, zMinVal = zMinVal, zMaxVal = zMaxVal, plotLogX = plotLogX, plotLogY = plotLogY, plotLogZ = plotLogZ, increasedDotSize = increasedDotSize, diffShapes = diffShapes, diffShapesLegend = diffShapesLegend)
     dataVisObj.saveFigure(figureFileLoc[:figureFileLoc.rindex(".")] + "NoTitle" + figureFileLoc[figureFileLoc.rindex("."):], 500)

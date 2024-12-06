@@ -341,7 +341,7 @@ class TimeStep:
     # log x and y functionality not implemented, so I removed those parameters from the function call
     def makeHeatMap(self, axObj, xVar:str, yVar:str, xAxisLabel:str, yAxisLabel:str, titleLabel:str, colorbarLabel:str, 
                     zVar:str = None, zList:list[float] = None, zMinVal:float = float("-inf"), zMaxVal:float = float("inf"), plotLogX:bool = False, 
-                    plotLogY:bool = False, plotLogZ:bool = False, dotSize:float = None, diffShapes = False, diffShapesLegend:list[str] = None) -> None:
+                    plotLogY:bool = False, plotLogZ:bool = False, increasedDotSize:float = None, diffShapes = False, diffShapesLegend:list[str] = None) -> None:
         """Makes colored scatter plot based on the parameters below
 
         :param _type_ axObj: axis object to be plotted on.
@@ -358,7 +358,7 @@ class TimeStep:
         :param bool plotLogX: to plot x-axis logarithmically, defaults to False
         :param bool plotLogY: to plot y-axis logarithmically, defaults to False
         :param bool plotLogZ: to plot color logarithmically, defaults to False
-        :param float dotSize: size of dots, defaults to None
+        :param float increasedDotSize: increased size of dots, defaults to None
         :param bool diffShapes: whether or not to have different dots be different shapes, defaults to False
         :param list[str] diffShapesLegend: for making the legend of the different shapes, defaults to None
         """
@@ -399,7 +399,7 @@ class TimeStep:
             diffShapesIndices = None
 
         myColorMapService = ColorMapService([[xList[i], yList[i], zList[i]] for  i in range(len(xList))])
-        myColorMapService.makeColorPlotNonContinuous(axObj, xAxisLabel, yAxisLabel, titleLabel, colorbarLabel, dotSize = dotSize, diffShapes = diffShapes, diffShapesIndices = diffShapesIndices, diffShapesLegend = diffShapesLegend, vMin = zBoundToVBound(zMinVal), vMax = zBoundToVBound(zMaxVal))
+        myColorMapService.makeColorPlotNonContinuous(axObj, xAxisLabel, yAxisLabel, titleLabel, colorbarLabel, increasedDotSize = increasedDotSize, diffShapes = diffShapes, diffShapesIndices = diffShapesIndices, diffShapesLegend = diffShapesLegend, vMin = zBoundToVBound(zMinVal), vMax = zBoundToVBound(zMaxVal))
     
     def prepareForQ2DFModels(self, identifier:str, Z1Comp:Dict[str, float], Z2Comp:Dict[str, float], Z3Comp:Dict[str, float], Z1Temp:float, Z2Temp:float, Z3Temp:float, molWeights:Dict[str, float], nuVals:Dict[str, float]):
         """Makes key lists of inputs for the running of PDRs
