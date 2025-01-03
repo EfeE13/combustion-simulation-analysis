@@ -8,6 +8,8 @@ Various things for NGA and offline PDRs are implemented here, including:
     - Functionality for automatically running the three quasi-dimensional flamelet (Q2DF) models for a chosen subset of the cells in a time step
         - Functionality for determining which cells yield stoichiometric mixture fraction in [0, 1] for a chosen Q2DF model
 
+To run a code, one can go to the folder `CombustionModelAnalysis` and run something like `python -m src.pdrs_analysis.MainExample`
+
 # Requirements
 
 In addition to the source code, one should have:
