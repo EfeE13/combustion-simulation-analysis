@@ -6,6 +6,22 @@ from src.nga_analysis import utils
 from src.nga_analysis.TimeStep import TimeStep
 from src.utils.plotting_utils.DataPlot import DataPlot
 
+ENSIGHT_FOLDER = "/home/efeeroz/Documents/CombustionModelAnalysis/ensight_input/summer24"
+FOLDER_FIGS = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/25_03_12_paperfigs"
+FOLDER_Q2DF_TESTING_FIG = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/q2df_testing"
+
+STORE_FULL_SQUARE_FULL_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/FullSquareFullNumPoints"
+STORE_ZMIX_TRIM_FULL_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ZMIXExtremesTrimmedFullNumPoints"
+STORE_ZMIX_TRIM_FEWER_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ZMIXExtremesTrimmedFewerPoints"
+STORE_ALL_MODELS_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/AllModsValidReduced"
+STORE_MOD2_MOD3_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/Mod2Mod3ValidReduced"
+STORE_MANIQ2DF_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ManiQ2DFValidReduced"
+
+INPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/24_11_03FinalZeta"
+OUTPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/24_11_03FinalZeta"
+INPUT_FOLDER_Q2DF = "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/24_11_03Q2DF"
+OUTPUT_FOLDER_Q2DF = "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/24_11_03Q2DF"
+
 ALL_QUANTITIES = ['ZSTAR', 'ZMIX', 'Temp', 'C_ZST', 'C_ZZST', 'CHI', 'ADDS', 'DIFF', 'P', 'VISC', 'Y_CO2', 'Y_H2', 'Y_O2', 'ZSTA2', 'CHIREF', 'dRHO', 'KSGS', 'RHO', 'Y_CO', 'Y_F', 'Y_H2O', 'Y_OH', 'ZMIX2', 'Q2DF1ChiEta', 'Q2DF2ChiEta', 'Q2DF3ChiEta', 'Q2DF1ChiXi', 'Q2DF2ChiXi', 'Q2DF3ChiXi', 'Q2DF1Eta', 'Q2DF2Eta', 'Q2DF3Eta', 'FMIX', 'Q2DF1Ratio', 'Q2DF2Ratio', 'Q2DF3Ratio', 'Q2DF1Xi', 'Q2DF2Xi', 'Q2DF3Xi', "Q2DF1RatioNorm", "Q2DF2RatioNorm", "Q2DF3RatioNorm", "Ratio12Norm", "Ratio23Norm", "Ratio31Norm", "BestQ2DFModel"]
 quants = copy.deepcopy(ALL_QUANTITIES)
 quants += ["TolAirHepManiQ2DFFileName", "TolAirHepManiQ2DFZValue", "TolAirHepManiQ2DFValid"]
@@ -14,7 +30,7 @@ for model in ["1", "2", "3"]:
 
 def initialDataSetup():
     allQuantities = []
-    myTimeStep = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/ensight_input/summer24"), ["ZSTAR", "ZMIX", "Temp", "C_ZST", "C_ZZST", "CHI", 'ADDS', 'DIFF', 'P', 'VISC', 'Y_CO2', 'Y_H2', 'Y_O2', 'ZSTA2', 'CHIREF', 'dRHO', 'KSGS', 'RHO', 'Y_CO', 'Y_F', 'Y_H2O', 'Y_OH', 'ZMIX2'], "000124", True)
+    myTimeStep = TimeStep(utils.getInputFiles(ENSIGHT_FOLDER), ["ZSTAR", "ZMIX", "Temp", "C_ZST", "C_ZZST", "CHI", 'ADDS', 'DIFF', 'P', 'VISC', 'Y_CO2', 'Y_H2', 'Y_O2', 'ZSTA2', 'CHIREF', 'dRHO', 'KSGS', 'RHO', 'Y_CO', 'Y_F', 'Y_H2O', 'Y_OH', 'ZMIX2'], "000124", True)
     allQuantities += ["ZSTAR", "ZMIX", "Temp", "C_ZST", "C_ZZST", "CHI", 'ADDS', 'DIFF', 'P', 'VISC', 'Y_CO2', 'Y_H2', 'Y_O2', 'ZSTA2', 'CHIREF', 'dRHO', 'KSGS', 'RHO', 'Y_CO', 'Y_F', 'Y_H2O', 'Y_OH', 'ZMIX2']
 
     myTimeStep.addQuantity("FMIX")
@@ -79,25 +95,25 @@ def initialDataSetup():
 
     print("v" * 50 + "\n", allQuantities, "\n" + "^" * 50)
 
-    myTimeStep.storeData("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/FullSquareFullNumPoints")
+    myTimeStep.storeData(STORE_FULL_SQUARE_FULL_POINTS)
 
 def trimmingData():
-    myTimeStepFull = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/FullSquareFullNumPoints"), ALL_QUANTITIES, "000124", False)
+    myTimeStepFull = TimeStep(utils.getInputFiles(STORE_FULL_SQUARE_FULL_POINTS), ALL_QUANTITIES, "000124", False)
     assert myTimeStepFull.getNumCells() == 46135
     myTimeStepFull.removeCellsWithValue("ZMIX", 0.0001, "lt")
     myTimeStepFull.removeCellsWithValue("ZMIX", 0.9999, "gt")
     print("Full Size:", myTimeStepFull.getNumCells())
-    myTimeStepFull.storeData("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ZMIXExtremesTrimmedFullNumPoints")
+    myTimeStepFull.storeData(STORE_ZMIX_TRIM_FULL_POINTS)
 
     myTimeStepFullToReduced = copy.deepcopy(myTimeStepFull)
     myTimeStepFullToReduced.reduceNumCells(num = 1000)
-    myTimeStepFullToReduced.storeData("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ZMIXExtremesTrimmedFewerPoints")
+    myTimeStepFullToReduced.storeData(STORE_ZMIX_TRIM_FEWER_POINTS)
 
-def paperNonPDRsPlotting(dataLoc:str):
-    myTimeStep = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + dataLoc), ALL_QUANTITIES, "000124", False)
+def paperNonPDRsPlotting():
+    myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000124", False)
     assert myTimeStep.getNumCells() == 1000
 
-    folderLoc = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/25_03_12_paperfigs"
+    folderLoc = FOLDER_FIGS
     utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "Temperature (K)", folderLoc + "/Temperature.pdf", zVar = "Temp")
     utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "Preferred Model Based on $\psi$", folderLoc + "/BestQ2DFModel.pdf", zMinVal = 1.0, zMaxVal = 4.0, zVar = "BestQ2DFModel")
     for i in [1, 2, 3]:
@@ -112,7 +128,7 @@ def paperNonPDRsPlotting(dataLoc:str):
     utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "$x'$", folderLoc + "/xPrimeVal.pdf", titleLabel = "$x'$ Value", zMinVal = 0.0, zMaxVal = 6.0, zVar = "xPrime")
 
 def PDRsPreparation():
-    myTimeStepFull = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ZMIXExtremesTrimmedFullNumPoints"), ALL_QUANTITIES, "000124", False)
+    myTimeStepFull = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FULL_POINTS), ALL_QUANTITIES, "000124", False)
     myTimeStepFull.prepareForQ2DFModels("TolAirHep", {"A1CH3":1}, {"O2":0.23292, "N2":0.76708}, {"NXC7H16":1}, 300, 300, 300, {"A1CH3":92.14, "O2":31.999, "N2":28.01, "NXC7H16":100.21}, {"A1CH3":9, "O2":-1, "N2":0, "NXC7H16":11})
 
     AllModsValid = copy.deepcopy(myTimeStepFull)
@@ -132,22 +148,22 @@ def PDRsPreparation():
     AllModsValid.reduceNumCells(special1 = [["1", "2", "3"], [DESIRED_NUM_CELLS, DESIRED_NUM_CELLS, DESIRED_NUM_CELLS]])
     Mod2Mod3Valid.reduceNumCells(special1 = [["2", "3"], [DESIRED_NUM_CELLS, DESIRED_NUM_CELLS]])
     ManiQ2DFValid.reduceNumCells(special1 = [["1", "2", "3"], [DESIRED_NUM_CELLS, DESIRED_NUM_CELLS, DESIRED_NUM_CELLS]])
-    AllModsValid.storeData("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/AllModsValidReduced")
-    Mod2Mod3Valid.storeData("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/Mod2Mod3ValidReduced")
-    ManiQ2DFValid.storeData("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ManiQ2DFValidReduced")
+    AllModsValid.storeData(STORE_ALL_MODELS_REDUCED)
+    Mod2Mod3Valid.storeData(STORE_MOD2_MOD3_REDUCED)
+    ManiQ2DFValid.storeData(STORE_MANIQ2DF_REDUCED)
 
 def PDRsRunning():
-    AllModsValid = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/AllModsValidReduced"), quants, "000124", False)
-    Mod2Mod3Valid = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/Mod2Mod3ValidReduced"), quants, "000124", False)
-    ManiQ2DFValid = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ManiQ2DFValidReduced"), quants, "000124", False)
+    AllModsValid = TimeStep(utils.getInputFiles(STORE_ALL_MODELS_REDUCED), quants, "000124", False)
+    Mod2Mod3Valid = TimeStep(utils.getInputFiles(STORE_MOD2_MOD3_REDUCED), quants, "000124", False)
+    ManiQ2DFValid = TimeStep(utils.getInputFiles(STORE_MANIQ2DF_REDUCED), quants, "000124", False)
     print("Main Func - Stored data retrieved")
 
     for model in ["1", "2", "3"]:
-        AllModsValid.runManiZ("TolAirHep", model, ["Y-CO"], constants.ZETA_INPUT_ZETA_FOLDER, "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/24_11_03FinalZeta", "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/24_11_03FinalZeta")
+        AllModsValid.runManiZ("TolAirHep", model, ["Y-CO"], constants.ZETA_INPUT_ZETA_FOLDER, INPUT_FOLDER_ZETA, OUTPUT_FOLDER_ZETA)
     for model in ["2", "3"]:
-        Mod2Mod3Valid.runManiZ("TolAirHep", model, ["Y-CO"], constants.ZETA_INPUT_ZETA_FOLDER, "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/24_11_03FinalZeta", "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/24_11_03FinalZeta")
-    ManiQ2DFValid.runManiQ2DF("TolAirHep", ["Y-CO"], constants.MANI_Q2DF_INPUT, "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/24_11_03Q2DF", "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/24_11_03Q2DF")
-    ManiQ2DFValid.runManiZ("TolAirHep", "Best", ["Y-CO"], constants.ZETA_INPUT_Q2DF_FOLDER, "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/24_11_03Q2DF", "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/24_11_03Q2DF")
+        Mod2Mod3Valid.runManiZ("TolAirHep", model, ["Y-CO"], constants.ZETA_INPUT_ZETA_FOLDER, INPUT_FOLDER_ZETA, OUTPUT_FOLDER_ZETA)
+    ManiQ2DFValid.runManiQ2DF("TolAirHep", ["Y-CO"], constants.MANI_Q2DF_INPUT, INPUT_FOLDER_Q2DF, OUTPUT_FOLDER_Q2DF)
+    ManiQ2DFValid.runManiZ("TolAirHep", "Best", ["Y-CO"], constants.ZETA_INPUT_Q2DF_FOLDER, INPUT_FOLDER_Q2DF, OUTPUT_FOLDER_Q2DF)
     print("Main Func - PDRs ran")
 
     AllModsValidMod1YCO = np.array(AllModsValid.getDataList("TolAirHepZetaQ2DF1ResultY-CO"))
@@ -159,8 +175,7 @@ def PDRsRunning():
     ManiQ2DFValidYCO = np.array(ManiQ2DFValid.getDataList("TolAirHepManiQ2DFResultY-CO"))
     ManiQ2DFValidWithZetaBestYCO = np.array(ManiQ2DFValid.getDataList("TolAirHepZetaQ2DFBestResultY-CO"))
 
-    folderLoc = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/25_03_12_paperfigs"
-    folderLocQ2DFTesting = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/q2df_testing"
+    folderLoc = FOLDER_FIGS
 
     SHARED_COLORBAR_MIN = -10
     SHARED_COLORBAR_MAX = 0
@@ -168,7 +183,7 @@ def PDRsRunning():
     utils.makeAndSaveFigure(AllModsValid, "ZMIX", "FMIX", "$Z$", "$F$", "$\log_{10}|Y_{CO}(Q2DF2) - Y_{CO}(Q2DF3)|$", folderLoc + "/AllModsValidMod23.pdf", zList = np.log10(np.abs(AllModsValidMod2YCO - AllModsValidMod3YCO)), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"], zMinVal = SHARED_COLORBAR_MIN, zMaxVal = SHARED_COLORBAR_MAX)
     utils.makeAndSaveFigure(AllModsValid, "ZMIX", "FMIX", "$Z$", "$F$", "$\log_{10}|Y_{CO}(Q2DF3) - Y_{CO}(Q2DF1)|$", folderLoc + "/AllModsValidMod31.pdf", zList = np.log10(np.abs(AllModsValidMod3YCO - AllModsValidMod1YCO)), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"], zMinVal = SHARED_COLORBAR_MIN, zMaxVal = SHARED_COLORBAR_MAX)
     utils.makeAndSaveFigure(Mod2Mod3Valid, "ZMIX", "FMIX", "$Z$", "$F$", "$\log_{10}|Y_{CO}(Q2DF2) - Y_{CO}(Q2DF3)|$ ", folderLoc + "/Mod2Mod3ValidMod23.pdf", zList = np.log10(np.abs(Mod2Mod3ValidMod2YCO - Mod2Mod3ValidMod3YCO)), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"], zMinVal = SHARED_COLORBAR_MIN, zMaxVal = SHARED_COLORBAR_MAX)
-    utils.makeAndSaveFigure(ManiQ2DFValid, "ZMIX", "FMIX", "$Z$", "$F$", "$Y_{CO}(\text{ManiQ2DF}) / Y_{CO}(\text{ManiZBest})$", folderLocQ2DFTesting + "/Q2DFTesting.pdf", zList = np.abs(ManiQ2DFValidYCO / ManiQ2DFValidWithZetaBestYCO), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"])
+    utils.makeAndSaveFigure(ManiQ2DFValid, "ZMIX", "FMIX", "$Z$", "$F$", "$Y_{CO}(\text{ManiQ2DF}) / Y_{CO}(\text{ManiZBest})$", FOLDER_Q2DF_TESTING_FIG + "/Q2DFTesting.pdf", zList = np.abs(ManiQ2DFValidYCO / ManiQ2DFValidWithZetaBestYCO), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"])
     print("Main Func - PDRs results plotted")
     print("results,", np.abs(ManiQ2DFValidYCO / ManiQ2DFValidWithZetaBestYCO))
     print(ManiQ2DFValidYCO, ManiQ2DFValidWithZetaBestYCO)
@@ -176,12 +191,12 @@ def PDRsRunning():
 '''
 Make sure to change:
 - Change DESIRED_NUM_CELLS
-- Change the PDRs input and output folders when runManiZ or runManiQ2DF is called, and in constants.py where output directory is specified in the PDRs input
-- Consider changing the (two) folderLoc variables or folderLocQ2DFTesting variable to change where plots are saved to
+- Change the folders at the top of the program, and in constants.py where output directory is specified in the PDRs input
+- Make sure unneeded function calls in main are commented out to prevent overriding of randomly-selected data
 '''
 if __name__ == "__main__":
-    #initialDataSetup()
-    #trimmingData()
-    paperNonPDRsPlotting("ZMIXExtremesTrimmedFewerPoints")
-    #PDRsPreparation()
-    #PDRsRunning()
+    initialDataSetup()
+    trimmingData()
+    paperNonPDRsPlotting()
+    PDRsPreparation()
+    PDRsRunning()
