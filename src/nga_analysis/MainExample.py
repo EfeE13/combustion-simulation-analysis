@@ -32,7 +32,7 @@ for model in ["1", "2", "3"]:
 
 def initialDataSetup():
     allQuantities = []
-    myTimeStep = TimeStep(utils.getInputFiles(ENSIGHT_FOLDER), ["ZSTAR", "ZMIX", "Temp", "C_ZST", "C_ZZST", "CHI", 'ADDS', 'DIFF', 'P', 'VISC', 'Y_CO2', 'Y_H2', 'Y_O2', 'ZSTA2', 'CHIREF', 'dRHO', 'KSGS', 'RHO', 'Y_CO', 'Y_F', 'Y_H2O', 'Y_OH', 'ZMIX2'], "000124", True)
+    myTimeStep = TimeStep(utils.getInputFiles(ENSIGHT_FOLDER), ["ZSTAR", "ZMIX", "Temp", "C_ZST", "C_ZZST", "CHI", 'ADDS', 'DIFF', 'P', 'VISC', 'Y_CO2', 'Y_H2', 'Y_O2', 'ZSTA2', 'CHIREF', 'dRHO', 'KSGS', 'RHO', 'Y_CO', 'Y_F', 'Y_H2O', 'Y_OH', 'ZMIX2'], "000123", True)
     allQuantities += ["ZSTAR", "ZMIX", "Temp", "C_ZST", "C_ZZST", "CHI", 'ADDS', 'DIFF', 'P', 'VISC', 'Y_CO2', 'Y_H2', 'Y_O2', 'ZSTA2', 'CHIREF', 'dRHO', 'KSGS', 'RHO', 'Y_CO', 'Y_F', 'Y_H2O', 'Y_OH', 'ZMIX2']
 
     myTimeStep.addQuantity("FMIX")
@@ -100,7 +100,7 @@ def initialDataSetup():
     myTimeStep.storeData(STORE_FULL_SQUARE_FULL_POINTS)
 
 def trimmingData():
-    myTimeStepFull = TimeStep(utils.getInputFiles(STORE_FULL_SQUARE_FULL_POINTS), ALL_QUANTITIES, "000124", False)
+    myTimeStepFull = TimeStep(utils.getInputFiles(STORE_FULL_SQUARE_FULL_POINTS), ALL_QUANTITIES, "000123", False)
     assert myTimeStepFull.getNumCells() == 46135
     myTimeStepFull.removeCellsWithValue("ZMIX", 0.0001, "lt")
     myTimeStepFull.removeCellsWithValue("ZMIX", 0.9999, "gt")
@@ -112,7 +112,7 @@ def trimmingData():
     myTimeStepFullToReduced.storeData(STORE_ZMIX_TRIM_FEWER_POINTS)
 
 def paperNonPDRsPlotting():
-    myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000124", False)
+    myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
     assert myTimeStep.getNumCells() == 1000
 
     folderLoc = FOLDER_FIGS
@@ -137,7 +137,7 @@ def paperNonPDRsPlotting():
     utils.makeAndSaveFigure(myTimeStepForX, "ZMIX", "FMIX", "$Z$", "$F$", "$x$", folderLoc + "/xValNorm.pdf", titleLabel = "$x$ Value", zMinVal = 0.0, zMaxVal = 1.0, zVar = "BestXValNormalized")
 
 def PDRsPreparation():
-    myTimeStepFull = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FULL_POINTS), ALL_QUANTITIES, "000124", False)
+    myTimeStepFull = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FULL_POINTS), ALL_QUANTITIES, "000123", False)
     myTimeStepFull.prepareForQ2DFModels("TolAirHep", {"A1CH3":1}, {"O2":0.23292, "N2":0.76708}, {"NXC7H16":1}, 300, 300, 300, {"A1CH3":92.14, "O2":31.999, "N2":28.01, "NXC7H16":100.21}, {"A1CH3":9, "O2":-1, "N2":0, "NXC7H16":11})
 
     AllModsValid = copy.deepcopy(myTimeStepFull)
@@ -162,9 +162,9 @@ def PDRsPreparation():
     ManiQ2DFValid.storeData(STORE_MANIQ2DF_REDUCED)
 
 def PDRsRunning():
-    AllModsValid = TimeStep(utils.getInputFiles(STORE_ALL_MODELS_REDUCED), quants, "000124", False)
-    Mod2Mod3Valid = TimeStep(utils.getInputFiles(STORE_MOD2_MOD3_REDUCED), quants, "000124", False)
-    ManiQ2DFValid = TimeStep(utils.getInputFiles(STORE_MANIQ2DF_REDUCED), quants, "000124", False)
+    AllModsValid = TimeStep(utils.getInputFiles(STORE_ALL_MODELS_REDUCED), quants, "000123", False)
+    Mod2Mod3Valid = TimeStep(utils.getInputFiles(STORE_MOD2_MOD3_REDUCED), quants, "000123", False)
+    ManiQ2DFValid = TimeStep(utils.getInputFiles(STORE_MANIQ2DF_REDUCED), quants, "000123", False)
     print("Main Func - Stored data retrieved")
 
     for model in ["1", "2", "3"]:
