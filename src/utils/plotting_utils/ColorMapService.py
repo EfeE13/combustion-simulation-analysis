@@ -110,6 +110,8 @@ class ColorMapService:
             # TODO: remove +10 from dotSize in line below
             norm = plt.Normalize(vmin=vMin, vmax=vMax)  # Normalize z values
             edge_colors = cm.RdBu_r(norm(zList))
+            if colorbarLabel == "$x'$":
+                edge_colors = cm.twilight_shifted(norm(zList))
             c = axObj.scatter(xList, yList, s = DEFAULT_DOT_SIZE + increasedDotSize, facecolors = "none", edgecolors = edge_colors, linewidths = DOT_BORDER_WIDTH)
         else:
             if vMin != None:
@@ -137,7 +139,10 @@ class ColorMapService:
         pos = axObj.get_position()
         cax = axObj.get_figure().add_axes([pos.x1 + 0.01, pos.y0, 0.01, pos.height])
         
-        cbar = axObj.get_figure().colorbar(cm.ScalarMappable(norm = norm, cmap = CMAP_NON_CONTINUOUS_COLOR_MAP), cax = cax)
+        cmapToUse = CMAP_NON_CONTINUOUS_COLOR_MAP
+        if colorbarLabel == "$x'$":
+            cmapToUse = "twilight_shifted"
+        cbar = axObj.get_figure().colorbar(cm.ScalarMappable(norm = norm, cmap = cmapToUse), cax = cax)
         if colorbarLabel != None:
             cbar.set_label(colorbarLabel)
 
