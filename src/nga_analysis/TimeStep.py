@@ -13,6 +13,7 @@ from src.utils.plotting_utils.ColorMapService import ColorMapService
 from src.nga_analysis import utils as NGAUtils
 from src.utils import utils
 from src.nga_analysis import constants
+from src.nga_analysis.Q2DFGeneralizer import Q2DFGeneralizer
 
 class TimeStep:
     """
@@ -203,6 +204,18 @@ class TimeStep:
         elif quantity in ["BestXValNormalized"]:
             bestXVal = np.array(self.getDataList("BestXVal"))
             self.data[quantity] = list(bestXVal / (bestXVal + 1))
+        elif quantity in ["xPrime"]:
+            Z1 = ZSTAR
+            Z2 = 1 - ZMIX
+            chi11 = C_ZST
+            chi12 = -C_ZZST
+            chi22 = CHI
+            x_prime_list = []
+            for i in range(len(Z1)):
+                myQ2DFGeneralizer = Q2DFGeneralizer(Z1[i], Z2[i], chi11[i], chi12[i], chi22[i], "toluene", "air", "n-heptane")
+                chi, OMIX, FMIX, x_prime = myQ2DFGeneralizer.get_optimal_mapping()
+                x_prime_list.append(x_prime)
+            self.data[quantity] = x_prime_list
         else:
             # The place for defining new quantities you want to add is here, in this if-elif-elif-... section, open/closed principle :(
             raise ValueError("Variable " + quantity + " not implemented")

@@ -97,7 +97,7 @@ def paperNonPDRsPlotting(dataLoc:str):
     myTimeStep = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + dataLoc), ALL_QUANTITIES, "000124", False)
     assert myTimeStep.getNumCells() == 1000
 
-    folderLoc = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/paperfigs"
+    folderLoc = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/25_03_12_paperfigs"
     utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "Temperature (K)", folderLoc + "/Temperature.pdf", zVar = "Temp")
     utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "Preferred Model Based on $\psi$", folderLoc + "/BestQ2DFModel.pdf", zMinVal = 1.0, zMaxVal = 4.0, zVar = "BestQ2DFModel")
     for i in [1, 2, 3]:
@@ -107,13 +107,9 @@ def paperNonPDRsPlotting(dataLoc:str):
         utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "$\psi_" + i + "/\psi_" + j + "$ Normalized", folderLoc + "/Ratio" + i + j + "Norm.pdf", zVar = "Ratio" + i + j + "Norm")
         utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "$\psi_" + i + "/\psi_" + j + "$ Normalized", folderLoc + "/Ratio" + i + j + "NormCutoff.pdf", zVar = "Ratio" + i + j + "Norm", zMinVal = 0.0, zMaxVal = 1.0)
         utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "$\psi_" + i + "/\psi_" + j + "$ Normalized", folderLoc + "/Ratio" + i + j + "NormDiffShapes.pdf", zVar = "Ratio" + i + j + "Norm", zMinVal = 0.0, zMaxVal = 1.0, increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"])
-
-    myTimeStepForX = copy.deepcopy(myTimeStep)
-    myTimeStepForX.addQuantity("BestMVal")
-    myTimeStepForX.removeCellsWithValue("", -10000.0, "validm")
-    myTimeStepForX.addQuantity("BestXVal")
-    myTimeStepForX.addQuantity("BestXValNormalized")
-    utils.makeAndSaveFigure(myTimeStepForX, "ZMIX", "FMIX", "$Z$", "$F$", "$x$", folderLoc + "/xValNorm.pdf", titleLabel = "$x$ Value", zMinVal = 0.0, zMaxVal = 1.0, zVar = "BestXValNormalized")
+    
+    myTimeStep.addQuantity("xPrime")
+    utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "$x'$", folderLoc + "/xPrimeVal.pdf", titleLabel = "$x'$ Value", zMinVal = 0.0, zMaxVal = 6.0, zVar = "xPrime")
 
 def PDRsPreparation():
     myTimeStepFull = TimeStep(utils.getInputFiles("/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ZMIXExtremesTrimmedFullNumPoints"), ALL_QUANTITIES, "000124", False)
@@ -163,7 +159,7 @@ def PDRsRunning():
     ManiQ2DFValidYCO = np.array(ManiQ2DFValid.getDataList("TolAirHepManiQ2DFResultY-CO"))
     ManiQ2DFValidWithZetaBestYCO = np.array(ManiQ2DFValid.getDataList("TolAirHepZetaQ2DFBestResultY-CO"))
 
-    folderLoc = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/paperfigs"
+    folderLoc = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/25_03_12_paperfigs"
     folderLocQ2DFTesting = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/q2df_testing"
 
     SHARED_COLORBAR_MIN = -10
@@ -184,8 +180,8 @@ Make sure to change:
 - Consider changing the (two) folderLoc variables or folderLocQ2DFTesting variable to change where plots are saved to
 '''
 if __name__ == "__main__":
-    initialDataSetup()
-    trimmingData()
+    #initialDataSetup()
+    #trimmingData()
     paperNonPDRsPlotting("ZMIXExtremesTrimmedFewerPoints")
-    PDRsPreparation()
-    PDRsRunning()
+    #PDRsPreparation()
+    #PDRsRunning()
