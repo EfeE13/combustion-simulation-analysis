@@ -129,6 +129,13 @@ def paperNonPDRsPlotting():
     myTimeStep.addQuantity("xPrime")
     utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "$x'$", folderLoc + "/xPrimeVal.pdf", titleLabel = "$x'$ Value", zMinVal = 0.0, zMaxVal = 6.0, zVar = "xPrime")
 
+    myTimeStepForX = copy.deepcopy(myTimeStep)
+    myTimeStepForX.addQuantity("BestMVal")
+    myTimeStepForX.removeCellsWithValue("", -10000.0, "validm")
+    myTimeStepForX.addQuantity("BestXVal")
+    myTimeStepForX.addQuantity("BestXValNormalized")
+    utils.makeAndSaveFigure(myTimeStepForX, "ZMIX", "FMIX", "$Z$", "$F$", "$x$", folderLoc + "/xValNorm.pdf", titleLabel = "$x$ Value", zMinVal = 0.0, zMaxVal = 1.0, zVar = "BestXValNormalized")
+
 def PDRsPreparation():
     myTimeStepFull = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FULL_POINTS), ALL_QUANTITIES, "000124", False)
     myTimeStepFull.prepareForQ2DFModels("TolAirHep", {"A1CH3":1}, {"O2":0.23292, "N2":0.76708}, {"NXC7H16":1}, 300, 300, 300, {"A1CH3":92.14, "O2":31.999, "N2":28.01, "NXC7H16":100.21}, {"A1CH3":9, "O2":-1, "N2":0, "NXC7H16":11})
