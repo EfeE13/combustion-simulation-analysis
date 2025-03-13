@@ -7,20 +7,22 @@ from src.nga_analysis.TimeStep import TimeStep
 from src.utils.plotting_utils.DataPlot import DataPlot
 
 ENSIGHT_FOLDER = "/home/efeeroz/Documents/CombustionModelAnalysis/ensight_input/summer24"
-FOLDER_FIGS = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/25_03_12_paperfigs"
-FOLDER_Q2DF_TESTING_FIG = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/q2df_testing"
 
-STORE_FULL_SQUARE_FULL_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/FullSquareFullNumPoints"
-STORE_ZMIX_TRIM_FULL_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ZMIXExtremesTrimmedFullNumPoints"
-STORE_ZMIX_TRIM_FEWER_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ZMIXExtremesTrimmedFewerPoints"
-STORE_ALL_MODELS_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/AllModsValidReduced"
-STORE_MOD2_MOD3_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/Mod2Mod3ValidReduced"
-STORE_MANIQ2DF_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/ManiQ2DFValidReduced"
+LABEL  = constants.LABEL
+FOLDER_FIGS = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/" + LABEL + "paperfigs"
+FOLDER_Q2DF_TESTING_FIG = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/" + LABEL + "q2df_testing"
 
-INPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/24_11_03FinalZeta"
-OUTPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/24_11_03FinalZeta"
-INPUT_FOLDER_Q2DF = "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/24_11_03Q2DF"
-OUTPUT_FOLDER_Q2DF = "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/24_11_03Q2DF"
+STORE_FULL_SQUARE_FULL_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "FullSquareFullNumPoints"
+STORE_ZMIX_TRIM_FULL_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "ZMIXExtremesTrimmedFullNumPoints"
+STORE_ZMIX_TRIM_FEWER_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "ZMIXExtremesTrimmedFewerPoints"
+STORE_ALL_MODELS_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "AllModsValidReduced"
+STORE_MOD2_MOD3_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "Mod2Mod3ValidReduced"
+STORE_MANIQ2DF_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "ManiQ2DFValidReduced"
+
+INPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/" + LABEL + "Zeta"
+OUTPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/" + LABEL + "Zeta"
+INPUT_FOLDER_Q2DF = "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/" + LABEL + "Q2DF"
+OUTPUT_FOLDER_Q2DF = "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/" + LABEL + "Q2DF"
 
 ALL_QUANTITIES = ['ZSTAR', 'ZMIX', 'Temp', 'C_ZST', 'C_ZZST', 'CHI', 'ADDS', 'DIFF', 'P', 'VISC', 'Y_CO2', 'Y_H2', 'Y_O2', 'ZSTA2', 'CHIREF', 'dRHO', 'KSGS', 'RHO', 'Y_CO', 'Y_F', 'Y_H2O', 'Y_OH', 'ZMIX2', 'Q2DF1ChiEta', 'Q2DF2ChiEta', 'Q2DF3ChiEta', 'Q2DF1ChiXi', 'Q2DF2ChiXi', 'Q2DF3ChiXi', 'Q2DF1Eta', 'Q2DF2Eta', 'Q2DF3Eta', 'FMIX', 'Q2DF1Ratio', 'Q2DF2Ratio', 'Q2DF3Ratio', 'Q2DF1Xi', 'Q2DF2Xi', 'Q2DF3Xi', "Q2DF1RatioNorm", "Q2DF2RatioNorm", "Q2DF3RatioNorm", "Ratio12Norm", "Ratio23Norm", "Ratio31Norm", "BestQ2DFModel"]
 quants = copy.deepcopy(ALL_QUANTITIES)

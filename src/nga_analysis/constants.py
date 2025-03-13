@@ -6,6 +6,8 @@ LIST_NONFUELS = ["O2", "N2"]
 # If PDRs freezes on a filename, you can add to this list to skip it:
 BAD_INPUT_FILES_RUNNING_LIST = ["TolAirHepZetaQ2DF3ZMIX0~08188FMIX0~24048"] #"TolAirHepManiQ2DFZMIX0~37356FMIX0~14037", "TolAirHepManiQ2DFZMIX0~7122FMIX0~23566.multicomponent", "TolAirHepZetaQ2DF3ZMIX0~08188FMIX0~24048"]
 
+LABEL = "before_isat_fix_"
+
 ZETA_INPUT_ZETA_FOLDER = '''
 ! ZMIX Value = ZMIX_INPUT
 ! ZSTAR Value = ZSTAR_INPUT
@@ -39,13 +41,13 @@ Write to screen : .true.
 Write mass fractions : .true.
 Write flamelet file : .true.
 Verbose mode : .true.
-Output directory : outputs_pdrs/24_11_03Zeta
+Output directory : outputs_pdrs/''' + LABEL + '''Zeta
 Output phi : 1
 Return type : .Y
 Scalar dissipation rate : ScalarDissRate_INPUT
 Mechanism format : CK'''.strip()
 
-ZETA_INPUT_Q2DF_FOLDER = ZETA_INPUT_ZETA_FOLDER.replace("outputs_pdrs/24_11_03Zeta", "outputs_pdrs/24_11_15TESTQ2DF")
+ZETA_INPUT_Q2DF_FOLDER = ZETA_INPUT_ZETA_FOLDER.replace("outputs_pdrs/" + LABEL + "Zeta", "outputs_pdrs/" + LABEL + "Q2DF")
 
 MANI_Q2DF_INPUT = '''
 ! BestQ2DFModel (possibly neglecting some models) = BestQ2DFModel_INPUT
@@ -83,7 +85,7 @@ Write to screen : .true.
 Write mass fractions : .true.
 Write flamelet file : .true.
 Verbose mode : .true.
-Output directory : outputs_pdrs/24_11_15TESTQ2DF
+Output directory : outputs_pdrs/''' + LABEL + '''Q2DF
 Output interval : 100
 Output phi : 1
 Return type : .Y
