@@ -6,7 +6,7 @@ from src.nga_analysis import utils
 from src.nga_analysis.TimeStep import TimeStep
 from src.utils.plotting_utils.DataPlot import DataPlot
 
-ENSIGHT_FOLDER = "/home/efeeroz/Documents/CombustionModelAnalysis/ensight_input/summer24"
+ENSIGHT_FOLDER = "/home/efeeroz/Documents/CombustionModelAnalysis/ensight_input/after_isat_bugfix"
 
 LABEL  = constants.LABEL
 FOLDER_FIGS = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/" + LABEL + "paperfigs"
@@ -101,7 +101,7 @@ def initialDataSetup():
 
 def trimmingData():
     myTimeStepFull = TimeStep(utils.getInputFiles(STORE_FULL_SQUARE_FULL_POINTS), ALL_QUANTITIES, "000123", False)
-    assert myTimeStepFull.getNumCells() == 46135
+    assert myTimeStepFull.getNumCells() == 45206   # 46135
     myTimeStepFull.removeCellsWithValue("ZMIX", 0.0001, "lt")
     myTimeStepFull.removeCellsWithValue("ZMIX", 0.9999, "gt")
     print("Full Size:", myTimeStepFull.getNumCells())
@@ -117,7 +117,7 @@ def paperNonPDRsPlotting():
 
     folderLoc = FOLDER_FIGS
     utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "Temperature (K)", folderLoc + "/Temperature.pdf", zVar = "Temp")
-    utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "Preferred Model Based on $\psi$", folderLoc + "/BestQ2DFModel.pdf", zMinVal = 1.0, zMaxVal = 4.0, zVar = "BestQ2DFModel")
+    utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "Preferred Model Based on $\psi$", folderLoc + "/BestQ2DFModel.pdf", zMinVal = 1.0, zMaxVal = 3.0, zVar = "BestQ2DFModel")
     for i in [1, 2, 3]:
         utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", "$\psi_" + str(i) + " / (\psi_" + str(i) + " + 1)$", folderLoc + "/Psi" + str(i) + "Norm.pdf", zVar = "Q2DF" + str(i) + "RatioNorm")
     for compareValues in [[1, 2], [2, 3], [3, 1]]:
@@ -171,8 +171,8 @@ def PDRsRunning():
         AllModsValid.runManiZ("TolAirHep", model, ["Y-CO"], constants.ZETA_INPUT_ZETA_FOLDER, INPUT_FOLDER_ZETA, OUTPUT_FOLDER_ZETA)
     for model in ["2", "3"]:
         Mod2Mod3Valid.runManiZ("TolAirHep", model, ["Y-CO"], constants.ZETA_INPUT_ZETA_FOLDER, INPUT_FOLDER_ZETA, OUTPUT_FOLDER_ZETA)
-    ManiQ2DFValid.runManiQ2DF("TolAirHep", ["Y-CO"], constants.MANI_Q2DF_INPUT, INPUT_FOLDER_Q2DF, OUTPUT_FOLDER_Q2DF)
-    ManiQ2DFValid.runManiZ("TolAirHep", "Best", ["Y-CO"], constants.ZETA_INPUT_Q2DF_FOLDER, INPUT_FOLDER_Q2DF, OUTPUT_FOLDER_Q2DF)
+    #ManiQ2DFValid.runManiQ2DF("TolAirHep", ["Y-CO"], constants.MANI_Q2DF_INPUT, INPUT_FOLDER_Q2DF, OUTPUT_FOLDER_Q2DF)
+    #ManiQ2DFValid.runManiZ("TolAirHep", "Best", ["Y-CO"], constants.ZETA_INPUT_Q2DF_FOLDER, INPUT_FOLDER_Q2DF, OUTPUT_FOLDER_Q2DF)
     print("Main Func - PDRs ran")
 
     AllModsValidMod1YCO = np.array(AllModsValid.getDataList("TolAirHepZetaQ2DF1ResultY-CO"))
@@ -181,8 +181,8 @@ def PDRsRunning():
     Mod2Mod3ValidMod2YCO = np.array(Mod2Mod3Valid.getDataList("TolAirHepZetaQ2DF2ResultY-CO"))
     Mod2Mod3ValidMod3YCO = np.array(Mod2Mod3Valid.getDataList("TolAirHepZetaQ2DF3ResultY-CO"))
 
-    ManiQ2DFValidYCO = np.array(ManiQ2DFValid.getDataList("TolAirHepManiQ2DFResultY-CO"))
-    ManiQ2DFValidWithZetaBestYCO = np.array(ManiQ2DFValid.getDataList("TolAirHepZetaQ2DFBestResultY-CO"))
+    #ManiQ2DFValidYCO = np.array(ManiQ2DFValid.getDataList("TolAirHepManiQ2DFResultY-CO"))
+    #ManiQ2DFValidWithZetaBestYCO = np.array(ManiQ2DFValid.getDataList("TolAirHepZetaQ2DFBestResultY-CO"))
 
     folderLoc = FOLDER_FIGS
 
@@ -192,10 +192,10 @@ def PDRsRunning():
     utils.makeAndSaveFigure(AllModsValid, "ZMIX", "FMIX", "$Z$", "$F$", "$\log_{10}|Y_{CO}(Q2DF2) - Y_{CO}(Q2DF3)|$", folderLoc + "/AllModsValidMod23.pdf", zList = np.log10(np.abs(AllModsValidMod2YCO - AllModsValidMod3YCO)), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"], zMinVal = SHARED_COLORBAR_MIN, zMaxVal = SHARED_COLORBAR_MAX)
     utils.makeAndSaveFigure(AllModsValid, "ZMIX", "FMIX", "$Z$", "$F$", "$\log_{10}|Y_{CO}(Q2DF3) - Y_{CO}(Q2DF1)|$", folderLoc + "/AllModsValidMod31.pdf", zList = np.log10(np.abs(AllModsValidMod3YCO - AllModsValidMod1YCO)), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"], zMinVal = SHARED_COLORBAR_MIN, zMaxVal = SHARED_COLORBAR_MAX)
     utils.makeAndSaveFigure(Mod2Mod3Valid, "ZMIX", "FMIX", "$Z$", "$F$", "$\log_{10}|Y_{CO}(Q2DF2) - Y_{CO}(Q2DF3)|$ ", folderLoc + "/Mod2Mod3ValidMod23.pdf", zList = np.log10(np.abs(Mod2Mod3ValidMod2YCO - Mod2Mod3ValidMod3YCO)), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"], zMinVal = SHARED_COLORBAR_MIN, zMaxVal = SHARED_COLORBAR_MAX)
-    utils.makeAndSaveFigure(ManiQ2DFValid, "ZMIX", "FMIX", "$Z$", "$F$", "$Y_{CO}(\text{ManiQ2DF}) / Y_{CO}(\text{ManiZBest})$", FOLDER_Q2DF_TESTING_FIG + "/Q2DFTesting.pdf", zList = np.abs(ManiQ2DFValidYCO / ManiQ2DFValidWithZetaBestYCO), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"])
+    #utils.makeAndSaveFigure(ManiQ2DFValid, "ZMIX", "FMIX", "$Z$", "$F$", "$Y_{CO}(\text{ManiQ2DF}) / Y_{CO}(\text{ManiZBest})$", FOLDER_Q2DF_TESTING_FIG + "/Q2DFTesting.pdf", zList = np.abs(ManiQ2DFValidYCO / ManiQ2DFValidWithZetaBestYCO), increasedDotSize = 4, diffShapes = True, diffShapesLegend = ["Q2DF1 Best", "Q2DF2 Best", "Q2DF3 Best"])
     print("Main Func - PDRs results plotted")
-    print("results,", np.abs(ManiQ2DFValidYCO / ManiQ2DFValidWithZetaBestYCO))
-    print(ManiQ2DFValidYCO, ManiQ2DFValidWithZetaBestYCO)
+    #print("results,", np.abs(ManiQ2DFValidYCO / ManiQ2DFValidWithZetaBestYCO))
+    #print(ManiQ2DFValidYCO, ManiQ2DFValidWithZetaBestYCO)
 
 '''
 Make sure to change:
@@ -204,8 +204,8 @@ Make sure to change:
 - Make sure unneeded function calls in main are commented out to prevent overriding of randomly-selected data
 '''
 if __name__ == "__main__":
-    initialDataSetup()
-    trimmingData()
-    paperNonPDRsPlotting()
-    PDRsPreparation()
-    PDRsRunning()
+    #initialDataSetup()
+    #trimmingData()
+    #paperNonPDRsPlotting()
+    #PDRsPreparation()
+    #PDRsRunning()

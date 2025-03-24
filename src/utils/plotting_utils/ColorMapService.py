@@ -112,6 +112,8 @@ class ColorMapService:
             edge_colors = cm.RdBu_r(norm(zList))
             if colorbarLabel == "$x'$":
                 edge_colors = cm.twilight_shifted(norm(zList))
+            elif colorbarLabel == "Preferred Model Based on $\psi$":
+                edge_colors = cm.coolwarm(norm(zList))
             c = axObj.scatter(xList, yList, s = DEFAULT_DOT_SIZE + increasedDotSize, facecolors = "none", edgecolors = edge_colors, linewidths = DOT_BORDER_WIDTH)
         else:
             if vMin != None:

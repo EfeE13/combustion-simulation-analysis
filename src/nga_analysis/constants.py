@@ -6,7 +6,7 @@ LIST_NONFUELS = ["O2", "N2"]
 # If PDRs freezes on a filename, you can add to this list to skip it:
 BAD_INPUT_FILES_RUNNING_LIST = ["TolAirHepZetaQ2DF3ZMIX0~08188FMIX0~24048"] #"TolAirHepManiQ2DFZMIX0~37356FMIX0~14037", "TolAirHepManiQ2DFZMIX0~7122FMIX0~23566.multicomponent", "TolAirHepZetaQ2DF3ZMIX0~08188FMIX0~24048"]
 
-LABEL = "before_isat_fix_"
+LABEL = "after_isat_fix_"
 
 ZETA_INPUT_ZETA_FOLDER = '''
 ! ZMIX Value = ZMIX_INPUT
