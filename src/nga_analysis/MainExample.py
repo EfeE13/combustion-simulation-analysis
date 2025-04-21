@@ -1,5 +1,7 @@
 import copy
 import numpy as np
+import random
+import textwrap
 
 from src.nga_analysis import constants
 from src.nga_analysis import utils
@@ -197,6 +199,35 @@ def PDRsRunning():
     #print("results,", np.abs(ManiQ2DFValidYCO / ManiQ2DFValidWithZetaBestYCO))
     #print(ManiQ2DFValidYCO, ManiQ2DFValidWithZetaBestYCO)
 
+def RawMixingDataIDAM():
+    myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
+    NUM_CELLS = 1000
+    assert myTimeStep.getNumCells() == NUM_CELLS
+
+    cell_order = list(range(NUM_CELLS))
+    random.seed(13)
+    random.shuffle(cell_order)
+
+    raw_mixing_data = []
+    for cell_num in cell_order:
+        Z1 = myTimeStep.getData("ZSTAR", cell_num)
+        Z2 = 1 - myTimeStep.getData("ZMIX", cell_num)
+        chi11 = myTimeStep.getData("C_ZST", cell_num)
+        chi12 = -myTimeStep.getData("C_ZZST", cell_num)
+        chi22 = myTimeStep.getData("CHI", cell_num)
+        raw_mixing_data.append([Z1, Z2, chi11, chi12, chi22])
+
+    raw_mixing_data_1D = []
+    for i in range(5):
+        raw_mixing_data_1D += [raw_mixing_data[j][i] for j in range(NUM_CELLS)]
+    raw_mixing_data_1D = [str(elm) + "_WP" for elm in raw_mixing_data_1D]
+
+    str_to_print = "raw_mixing_data = reshape([" + ", ".join(raw_mixing_data_1D) + "], shape(raw_mixing_data))"
+    chunks = textwrap.wrap(str_to_print, width = 80, break_long_words = False)
+    str_to_print = " &\n\t".join(chunks)
+    with open("/home/efeeroz/Other/IDAM_raw_data/IDAM_raw_data.txt", "w") as raw_data_file:
+        raw_data_file.write(str_to_print)
+
 '''
 Make sure to change:
 - Change DESIRED_NUM_CELLS
@@ -209,3 +240,5 @@ if __name__ == "__main__":
     #paperNonPDRsPlotting()
     #PDRsPreparation()
     #PDRsRunning()
+
+    RawMixingDataIDAM()
