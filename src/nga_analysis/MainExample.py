@@ -227,6 +227,13 @@ def RawMixingDataIDAM():
     str_to_print = " &\n\t".join(chunks)
     with open("/home/efeeroz/Other/IDAM_raw_data/IDAM_raw_data.txt", "w") as raw_data_file:
         raw_data_file.write(str_to_print)
+    
+    """
+    cell_shuffling_dict = {}
+    for elm in range(1, 1000+1):
+        cell_shuffling_dict[elm] = cell_order[elm - 1]
+    print(cell_shuffling_dict)
+    """
 
 '''
 Make sure to change:
