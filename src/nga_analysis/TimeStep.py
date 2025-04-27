@@ -216,6 +216,17 @@ class TimeStep:
                 chi, OMIX, FMIX, x_prime = myQ2DFGeneralizer.get_optimal_mapping()
                 x_prime_list.append(x_prime)
             self.data[quantity] = x_prime_list
+        elif quantity in ['IDAM_RHO', 'IDAM_DIFF', 'IDAM_VISC', 'IDAM_Temp', 'IDAM_Y_CO2', 'IDAM_Y_O2', 'IDAM_Y_CO', 'IDAM_Y_H2O', 'IDAM_Y_H2', 'IDAM_Y_OH']:
+            assert(len(constants.IDAM_data_dict[quantity])) == 1000
+            self.data[quantity] = constants.IDAM_data_dict[quantity]
+        elif quantity in ['IDAM_RHO_diff', 'IDAM_DIFF_diff', 'IDAM_VISC_diff', 'IDAM_Temp_diff', 'IDAM_Y_CO2_diff', 'IDAM_Y_O2_diff', 'IDAM_Y_CO_diff', 'IDAM_Y_H2O_diff', 'IDAM_Y_H2_diff', 'IDAM_Y_OH_diff']:
+            self.data[quantity] = []
+            for i in range(self.getNumCells()):
+                self.data[quantity].append(float(np.log10(abs(float(self.getData(quantity[:-5], i)) - float(self.getData(quantity[5:-5], i))))))
+        elif quantity in ['IDAM_RHO_percent', 'IDAM_DIFF_percent', 'IDAM_VISC_percent', 'IDAM_Temp_percent', 'IDAM_Y_CO2_percent', 'IDAM_Y_O2_percent', 'IDAM_Y_CO_percent', 'IDAM_Y_H2O_percent', 'IDAM_Y_H2_percent', 'IDAM_Y_OH_percent']:
+            self.data[quantity] = []
+            for i in range(self.getNumCells()):
+                self.data[quantity].append(float(np.log10(abs((float(self.getData(quantity[:-8], i)) / float(self.getData(quantity[5:-8], i)) - 1) * 100))))
         else:
             # The place for defining new quantities you want to add is here, in this if-elif-elif-... section, open/closed principle :(
             raise ValueError("Variable " + quantity + " not implemented")

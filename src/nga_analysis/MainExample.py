@@ -20,6 +20,7 @@ STORE_ZMIX_TRIM_FEWER_POINTS = "/home/efeeroz/Documents/CombustionModelAnalysis/
 STORE_ALL_MODELS_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "AllModsValidReduced"
 STORE_MOD2_MOD3_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "Mod2Mod3ValidReduced"
 STORE_MANIQ2DF_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "ManiQ2DFValidReduced"
+STORE_IDAM_DATA = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "IDAMData"
 
 INPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/" + LABEL + "Zeta"
 OUTPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/" + LABEL + "Zeta"
@@ -235,6 +236,49 @@ def RawMixingDataIDAM():
     print(cell_shuffling_dict)
     """
 
+def plotIDAMOutput():
+    myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
+    assert myTimeStep.getNumCells() == 1000
+    for quantity in ['IDAM_RHO', 'IDAM_DIFF', 'IDAM_VISC', 'IDAM_Temp', 'IDAM_Y_CO2', 'IDAM_Y_O2', 'IDAM_Y_CO', 'IDAM_Y_H2O', 'IDAM_Y_H2', 'IDAM_Y_OH']:
+        myTimeStep.addQuantity(quantity)
+    
+    myTimeStep.removeCellsWithValue("IDAM_DIFF", "NA", "eqexact")
+    assert myTimeStep.getNumCells() == 727
+
+    for quantity in ['IDAM_RHO_diff', 'IDAM_DIFF_diff', 'IDAM_VISC_diff', 'IDAM_Temp_diff', 'IDAM_Y_CO2_diff', 'IDAM_Y_O2_diff', 'IDAM_Y_CO_diff', 'IDAM_Y_H2O_diff', 'IDAM_Y_H2_diff', 'IDAM_Y_OH_diff']:
+        myTimeStep.addQuantity(quantity)
+
+    for quantity in ['IDAM_RHO_percent', 'IDAM_DIFF_percent', 'IDAM_VISC_percent', 'IDAM_Temp_percent', 'IDAM_Y_CO2_percent', 'IDAM_Y_O2_percent', 'IDAM_Y_CO_percent', 'IDAM_Y_H2O_percent', 'IDAM_Y_H2_percent', 'IDAM_Y_OH_percent']:
+        myTimeStep.addQuantity(quantity)
+    
+    myTimeStep.storeData(STORE_IDAM_DATA)
+
+    folderLoc = FOLDER_FIGS
+
+    labelHelper = {'IDAM_RHO':"rho", 'IDAM_DIFF':"diff", 'IDAM_VISC':"visc", 'IDAM_Temp':"$T$", 'IDAM_Y_CO2':"$Y_{CO2}$", 'IDAM_Y_O2':"$Y_{O2}$", 'IDAM_Y_CO':"$Y_{CO}$", 'IDAM_Y_H2O':"$Y_{H2O}$", 'IDAM_Y_H2':"$Y_{H2}$", 'IDAM_Y_OH':"$Y_{OH}$"}
+    for quantity in ['IDAM_RHO', 'IDAM_DIFF', 'IDAM_VISC', 'IDAM_Temp', 'IDAM_Y_CO2', 'IDAM_Y_O2', 'IDAM_Y_CO', 'IDAM_Y_H2O', 'IDAM_Y_H2', 'IDAM_Y_OH']:
+        figureLabel = "IDAM " + labelHelper[quantity]
+        utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", figureLabel, folderLoc + "/IDAM_outputs/" + quantity + ".pdf", zVar = quantity)
+
+    labelHelper = {'IDAM_RHO_diff':"rho", 'IDAM_DIFF_diff':"diff", 'IDAM_VISC_diff':"visc", 'IDAM_Temp_diff':"T", 'IDAM_Y_CO2_diff':"Y_{CO2}", 'IDAM_Y_O2_diff':"Y_{O2}", 'IDAM_Y_CO_diff':"Y_{CO}", 'IDAM_Y_H2O_diff':"Y_{H2O}", 'IDAM_Y_H2_diff':"Y_{H2}", 'IDAM_Y_OH_diff':"Y_{OH}"}
+    for quantity in ['IDAM_RHO_diff', 'IDAM_DIFF_diff', 'IDAM_VISC_diff', 'IDAM_Temp_diff', 'IDAM_Y_CO2_diff', 'IDAM_Y_O2_diff', 'IDAM_Y_CO_diff', 'IDAM_Y_H2O_diff', 'IDAM_Y_H2_diff', 'IDAM_Y_OH_diff']:
+        figureLabel = "$\log|" + labelHelper[quantity] + "($IDAM$) - " + labelHelper[quantity] + "($Q2DF2$)|$"
+        utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", figureLabel, folderLoc + "/IDAM_outputs/log_diff_" + quantity + ".pdf", zVar = quantity)
+    
+    labelHelper = {'IDAM_RHO_percent':"rho", 'IDAM_DIFF_percent':"diff", 'IDAM_VISC_percent':"visc", 'IDAM_Temp_percent':"T", 'IDAM_Y_CO2_percent':"Y_{CO2}", 'IDAM_Y_O2_percent':"Y_{O2}", 'IDAM_Y_CO_percent':"Y_{CO}", 'IDAM_Y_H2O_percent':"Y_{H2O}", 'IDAM_Y_H2_percent':"Y_{H2}", 'IDAM_Y_OH_percent':"Y_{OH}"}
+    for quantity in ['IDAM_RHO_percent', 'IDAM_DIFF_percent', 'IDAM_VISC_percent', 'IDAM_Temp_percent', 'IDAM_Y_CO2_percent', 'IDAM_Y_O2_percent', 'IDAM_Y_CO_percent', 'IDAM_Y_H2O_percent', 'IDAM_Y_H2_percent', 'IDAM_Y_OH_percent']:
+        figureLabel = "$\log$ of % diff for $" + labelHelper[quantity] + "$"
+        utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", figureLabel, folderLoc + "/IDAM_outputs/percent_" + quantity + ".pdf", zVar = quantity)
+
+def plotNonIDAMOutput():
+    myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
+    assert myTimeStep.getNumCells() == 1000
+    folderLoc = FOLDER_FIGS
+    labelHelper = {'RHO':"rho", 'DIFF':"diff", 'VISC':"visc", 'Temp':"$T$", 'Y_CO2':"$Y_{CO2}$", 'Y_O2':"$Y_{O2}$", 'Y_CO':"$Y_{CO}$", 'Y_H2O':"$Y_{H2O}$", 'Y_H2':"$Y_{H2}$", 'Y_OH':"$Y_{OH}$"}
+    for quantity in ['RHO', 'DIFF', 'VISC', 'Temp', 'Y_CO2', 'Y_O2', 'Y_CO', 'Y_H2O', 'Y_H2', 'Y_OH']:
+        figureLabel = "Q2DF Model 2 " + labelHelper[quantity]
+        utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", figureLabel, folderLoc + "/IDAM_outputs/" + "Q2DF2_" + quantity + ".pdf", zVar = quantity)
+
 '''
 Make sure to change:
 - Change DESIRED_NUM_CELLS
@@ -248,4 +292,8 @@ if __name__ == "__main__":
     #PDRsPreparation()
     #PDRsRunning()
 
-    RawMixingDataIDAM()
+    #RawMixingDataIDAM()
+    #plotIDAMOutput()
+
+    plotIDAMOutput()
+    plotNonIDAMOutput()
