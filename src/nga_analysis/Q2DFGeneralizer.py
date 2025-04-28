@@ -10,7 +10,7 @@ LEFTOVER_OX = {"toluene":-1/92.14*9*31.999, "air":1*0.23292, "n-heptane":-1/100.
 TOL = 0.00000001
 
 class Q2DFGeneralizer:
-    def __init__(self, Z1_CFD:float, Z2_CFD:float, chi11_CFD:float, chi12_CFD:float, chi22_CFD:float, stream1:str, stream2:str, stream3:str, count) -> None:
+    def __init__(self, Z1_CFD:float, Z2_CFD:float, chi11_CFD:float, chi12_CFD:float, chi22_CFD:float, stream1:str, stream2:str, stream3:str) -> None:
         self.Z_CFD = [Z1_CFD, Z2_CFD, 1 - Z1_CFD - Z2_CFD]
 
         chi13_CFD = -chi11_CFD - chi12_CFD
@@ -22,10 +22,6 @@ class Q2DFGeneralizer:
 
         self.streams = [stream1, stream2, stream3]
         self.leftover_ox_CFD = [LEFTOVER_OX[self.streams[0]], LEFTOVER_OX[self.streams[1]], LEFTOVER_OX[self.streams[2]]]
-
-        self.count = count # remove
-        if count == 130:
-            print("INPUTS HERE", Z1_CFD, Z2_CFD, chi11_CFD, chi12_CFD, chi22_CFD)
     
     def get_optimal_mapping(self):
         optimal_mapping_candidates = {}   # chi ratio: [i, j, x] where i and j are the indices of the compositions that will be labeled stream 1 and stream 2, respectively
@@ -120,16 +116,6 @@ class Q2DFGeneralizer:
         if complement_xi:
             Z_opt = 1 - Z_opt
             Z_stoic = 1 - Z_stoic
-
-        if self.count == 130:
-            print("vvvvvvvvvvvvv" * 4)
-            print("x_opt", x)
-            print("i_opt", i+1)
-            print("j_opt", j+1)
-            print("Z_opt", Z_opt)
-            print("Z", Z1, Z2, 1-Z1-Z2)
-            print("b", self.get_b(Z1, Z2, x))
-            print("^^^^^^^^^^^^^" * 3)
 
         return OMIX, FMIX, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic
 
