@@ -227,6 +227,12 @@ class TimeStep:
             self.data[quantity] = []
             for i in range(self.getNumCells()):
                 self.data[quantity].append(float(np.log10(abs((float(self.getData(quantity[:-8], i)) / float(self.getData(quantity[5:-8], i)) - 1) * 100))))
+        elif quantity in ["5BasicVariables"]:
+            self.data["Z1"] = copy.deepcopy(self.getDataList("ZSTAR"))
+            self.data["Z2"] = copy.deepcopy([1 - elm for elm in self.getDataList("ZMIX")])
+            self.data["chi11"] = copy.deepcopy(self.getDataList("C_ZST"))
+            self.data["chi12"] = copy.deepcopy([-elm for elm in self.getDataList("C_ZZST")])
+            self.data["chi22"] = copy.deepcopy(self.getDataList("CHI"))
         else:
             # The place for defining new quantities you want to add is here, in this if-elif-elif-... section, open/closed principle :(
             raise ValueError("Variable " + quantity + " not implemented")
@@ -353,6 +359,9 @@ class TimeStep:
     def getData(self, quantity:str, cellNum:int) -> float:
         self.__assertQuantityPresent(quantity)
         return self.getDataList(quantity)[cellNum]
+
+    def getAllData(self):
+        return self.data
 
     def getMin(self, quantity:str) -> float:
         self.__assertQuantityPresent(quantity)
