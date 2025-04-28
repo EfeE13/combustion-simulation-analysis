@@ -211,11 +211,14 @@ class TimeStep:
             chi12 = -C_ZZST
             chi22 = CHI
             x_prime_list = []
+            chi_ratio_list = []
             for i in range(len(Z1)):
                 myQ2DFGeneralizer = Q2DFGeneralizer(Z1[i], Z2[i], chi11[i], chi12[i], chi22[i], "toluene", "air", "n-heptane")
-                chi, OMIX, FMIX, x_prime = myQ2DFGeneralizer.get_optimal_mapping()
+                OMIX, FMIX, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic = myQ2DFGeneralizer.get_optimal_mapping()
                 x_prime_list.append(x_prime)
+                chi_ratio_list.append((chi_eta / chi) / (chi_eta / chi + 1))
             self.data[quantity] = x_prime_list
+            self.data["xPrimeChiRatioNorm"] = chi_ratio_list
         elif quantity in ['IDAM_RHO', 'IDAM_DIFF', 'IDAM_VISC', 'IDAM_Temp', 'IDAM_Y_CO2', 'IDAM_Y_O2', 'IDAM_Y_CO', 'IDAM_Y_H2O', 'IDAM_Y_H2', 'IDAM_Y_OH']:
             assert(len(constants.IDAM_data_dict[quantity])) == 1000
             self.data[quantity] = constants.IDAM_data_dict[quantity]

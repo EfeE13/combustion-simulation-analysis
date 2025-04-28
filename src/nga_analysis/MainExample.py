@@ -279,6 +279,27 @@ def plotNonIDAMOutput():
         figureLabel = "Q2DF Model 2 " + labelHelper[quantity]
         utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", figureLabel, folderLoc + "/IDAM_outputs/" + "Q2DF2_" + quantity + ".pdf", zVar = quantity)
 
+def plotQ2DF2AndIDAMChiRatios():
+    new_storage_location = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "ZMIXExtremesTrimmedFewerPointsWithXPrime"
+    if False:
+        myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
+        assert myTimeStep.getNumCells() == 1000
+        myTimeStep.addQuantity("xPrime")
+        myTimeStep.storeData(new_storage_location)
+    else:
+        myTimeStep = TimeStep(utils.getInputFiles(new_storage_location), ALL_QUANTITIES + ["xPrime", "xPrimeChiRatioNorm"], "000123", False)
+        assert myTimeStep.getNumCells() == 1000
+
+    for elm in range(1000):
+        print(elm)
+        assert myTimeStep.getData("Q2DF2RatioNorm", elm) >= myTimeStep.getData("xPrimeChiRatioNorm", elm)
+
+    folderLoc = FOLDER_FIGS
+    labelHelper = {"Q2DF2RatioNorm":"Q2DF Model 2", "xPrimeChiRatioNorm":"On-the-Fly"}
+    for quantity in ["Q2DF2RatioNorm", "xPrimeChiRatioNorm"]:
+        figureLabel = "$\psi / (\psi + 1)$ for " + labelHelper[quantity]
+        utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", figureLabel, folderLoc + "/Chi_Ratios/" + quantity + ".pdf", zVar = quantity, zMinVal = 0, zMaxVal = 1)
+
 '''
 Make sure to change:
 - Change DESIRED_NUM_CELLS
