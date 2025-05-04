@@ -1,6 +1,8 @@
 import subprocess
 from datetime import datetime
 from typing import Optional
+from scipy.special import erfcinv
+import numpy as np
 
 def run(command: str) -> str:
     result = subprocess.run(command, shell = True, capture_output = True, text = True)
@@ -34,3 +36,5 @@ def outputTime(message:Optional[str] = "") -> str:
 def dayAndTime() -> str:
     return datetime.now().strftime("%Y-%m-%dAt%H-%M-%S").strip()
 
+def er_func(Z:float) -> float:
+    return float(np.exp(-2 * erfcinv(2*Z)**2))

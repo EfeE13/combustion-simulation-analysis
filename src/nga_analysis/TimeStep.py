@@ -640,6 +640,17 @@ class TimeStep:
             for pdrsQuantity in pdrsQuantities:
                 self.data[identifier + typeLabel + "Result" + pdrsQuantity].append(myPDRsRun.interpolate("Z", self.getData(identifier + typeLabel + "ZValue", i), pdrsQuantity))
 
+    def shuffleData(self, shuffled_indices = None) -> None:
+        if shuffled_indices == None:
+            shuffled_indices = list(range(self.getNumCells()))
+            random.seed(13)
+            random.shuffle(shuffled_indices)
+        
+        assert len(shuffled_indices) == self.getNumCells()
+        
+        for quantity in self.getQuantities():
+            self.data[quantity] = [self.data[quantity][index] for index in shuffled_indices]
+
     def __removeBadInputs(self) -> None:
         for badInput in constants.BAD_INPUT_FILES_RUNNING_LIST:
             self.removeCellsWithValue("TolAirHepManiQ2DFFileName", badInput, "eqexact")

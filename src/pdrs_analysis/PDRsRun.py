@@ -1,3 +1,5 @@
+import copy
+
 class PDRsRun:
     """
     Given outputFileName, generates a dictionary from column headers to data as a list
@@ -45,6 +47,9 @@ class PDRsRun:
     def getCol(self, columnHeader:str) -> list[float]:
         assert columnHeader in self.headerToDataDict.keys()
         return self.headerToDataDict[columnHeader]
+    
+    def getHeaders(self) -> list[str]:
+        return copy.deepcopy(list(self.headerToDataDict.keys()))
 
     def interpolate(self, inputHeader:str, inputVal:float, outputHeader:str) -> float:
         """There's a list of data corresponding to inputHeader and for outputHeader.

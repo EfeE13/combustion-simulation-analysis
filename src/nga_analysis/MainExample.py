@@ -2,11 +2,14 @@ import copy
 import numpy as np
 import random
 import textwrap
+from scipy.special import erfcinv
 
 from src.nga_analysis import constants
 from src.nga_analysis import utils
 from src.nga_analysis.TimeStep import TimeStep
 from src.utils.plotting_utils.DataPlot import DataPlot
+from src.nga_analysis.Q2DFGeneralizer import Q2DFGeneralizer
+from src.nga_analysis.OnTheFlyAndQ2DF2Runner import OnTheFlyAndQ2DF2Runner
 
 ENSIGHT_FOLDER = "/home/efeeroz/Documents/CombustionModelAnalysis/ensight_input/after_isat_bugfix"
 
@@ -229,12 +232,10 @@ def RawMixingDataIDAM():
     with open("/home/efeeroz/Other/IDAM_raw_data/IDAM_raw_data.txt", "w") as raw_data_file:
         raw_data_file.write(str_to_print)
     
-    """
     cell_shuffling_dict = {}
     for elm in range(1, 1000+1):
         cell_shuffling_dict[elm] = cell_order[elm - 1]
     print(cell_shuffling_dict)
-    """
 
 def plotIDAMOutput():
     myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
@@ -281,24 +282,34 @@ def plotNonIDAMOutput():
 
 def plotQ2DF2AndIDAMChiRatios():
     new_storage_location = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "ZMIXExtremesTrimmedFewerPointsWithXPrime"
-    if False:
+    if True:
         myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
         assert myTimeStep.getNumCells() == 1000
         myTimeStep.addQuantity("xPrime")
-        myTimeStep.storeData(new_storage_location)
+        #myTimeStep.storeData(new_storage_location)
     else:
         myTimeStep = TimeStep(utils.getInputFiles(new_storage_location), ALL_QUANTITIES + ["xPrime", "xPrimeChiRatioNorm"], "000123", False)
         assert myTimeStep.getNumCells() == 1000
 
     for elm in range(1000):
-        print(elm)
-        assert myTimeStep.getData("Q2DF2RatioNorm", elm) >= myTimeStep.getData("xPrimeChiRatioNorm", elm)
+        if not (myTimeStep.getData("Q2DF2RatioNorm", elm) >= myTimeStep.getData("xPrimeChiRatioNorm", elm)):
+            print(elm, myTimeStep.getData("Q2DF2RatioNorm", elm), myTimeStep.getData("xPrimeChiRatioNorm", elm))
 
     folderLoc = FOLDER_FIGS
     labelHelper = {"Q2DF2RatioNorm":"Q2DF Model 2", "xPrimeChiRatioNorm":"On-the-Fly"}
     for quantity in ["Q2DF2RatioNorm", "xPrimeChiRatioNorm"]:
         figureLabel = "$\psi / (\psi + 1)$ for " + labelHelper[quantity]
         utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", figureLabel, folderLoc + "/Chi_Ratios/" + quantity + ".pdf", zVar = quantity, zMinVal = 0, zMaxVal = 1)
+
+def runOnFlyAndQ2DF2():
+    myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
+    assert myTimeStep.getNumCells() == 1000
+    myTimeStep.addQuantity("5BasicVariables")
+
+    myTimeStep.shuffleData(constants.shuffling_timestep)
+    
+    my_runner = OnTheFlyAndQ2DF2Runner(myTimeStep, "toluene", "air", "n-heptane")
+    on_fly_data_dict, q2df_data_dict = my_runner.run_pdrs("/home/efeeroz/Documents/OnFlyVersusQ2DF/inputs_pdrs", "/home/efeeroz/Documents/OnFlyVersusQ2DF/outputs_pdrs", "/home/efeeroz/Documents/OnFlyVersusQ2DF/log.txt")
 
 '''
 Make sure to change:
@@ -316,5 +327,8 @@ if __name__ == "__main__":
     #RawMixingDataIDAM()
     #plotIDAMOutput()
 
-    plotIDAMOutput()
-    plotNonIDAMOutput()
+    #plotIDAMOutput()
+    #plotNonIDAMOutput()
+
+    #getManualOnTheFlyTestingPoints()
+    runOnFlyAndQ2DF2()
