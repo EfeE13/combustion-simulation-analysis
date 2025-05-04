@@ -40,6 +40,7 @@ class PDRsRunnableNonCartesian:   # 1D maniZ-type manifold calculations
             print("\tTimed out")
             error = True
         
+        output_folder = self.output_file_loc[:self.output_file_loc.rindex("/")]
         if utils.run("ls -Art " + output_folder + " | tail -n 1").strip()[:4] == "A1CH":   # Hard-coded for my case (toluene)
             output_folder = self.output_file_loc[:self.output_file_loc.rindex("/")]
             subprocess.run("mv " + output_folder + "/" + utils.run("ls -Art " + output_folder + " | tail -n 1").strip() + " " + self.output_file_loc, shell = True)
