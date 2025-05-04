@@ -301,6 +301,52 @@ def plotQ2DF2AndIDAMChiRatios():
         figureLabel = "$\psi / (\psi + 1)$ for " + labelHelper[quantity]
         utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", figureLabel, folderLoc + "/Chi_Ratios/" + quantity + ".pdf", zVar = quantity, zMinVal = 0, zMaxVal = 1)
 
+def getManualOnTheFlyTestingPoints():
+    def er_func(num:float) -> float:
+        return np.exp(-2 * erfcinv(2 * num)**2)
+
+    myTimeStep = TimeStep(utils.getInputFiles(STORE_IDAM_DATA), ALL_QUANTITIES + ["IDAM_Temp"], "000123", False)
+    assert myTimeStep.getNumCells() == 727
+
+    myTimeStep.removeAllButNearestCells(["ZMIX", "FMIX"], [[0.08, 0.27], [0.07, 0.15], [0.8, 0.27]])
+    assert myTimeStep.getNumCells() == 3
+
+    for i in range(3):
+        for quantity in ["ZMIX", "FMIX", "Temp", "IDAM_Temp"]:
+            print(i + 1, quantity, myTimeStep.getData(quantity, i))
+        print()
+    
+    myTimeStep.addQuantity("5BasicVariables")
+    for i in range(3):
+        print("Number", str(i + 1) + ":")
+        Z1, Z2, chi11, chi12, chi22 = myTimeStep.getData("Z1", i), myTimeStep.getData("Z2", i), myTimeStep.getData("chi11", i), myTimeStep.getData("chi12", i), myTimeStep.getData("chi22", i)
+        myQ2DFGen = Q2DFGeneralizer(Z1, Z2, chi11, chi12, chi22, "toluene", "air", "n-heptane")
+        OMIX, FMIX, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic = myQ2DFGen.get_optimal_mapping()
+        nameHelper = "Z1, Z2, chi11, chi12, chi22, OMIX, FMIX, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic".split(", ")
+        for j, var in enumerate([Z1, Z2, chi11, chi12, chi22, OMIX, FMIX, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic]):
+            print("\t" + nameHelper[j] + ":", var)
+        print("CHI", myTimeStep.getData("CHI", i))
+
+        print("\t[Z1, Z2, Z3] Calculation:", [float(elm) for elm in list(np.array(OMIX) * (1 - Z_opt) + np.array(FMIX) * Z_opt)])
+        chi_st = chi / er_func(Z_opt) * er_func(0.5)
+        print("\tOn-the-Fly:")
+        print("\t\tOMIX, FMIX:", OMIX, FMIX)
+        print("\t\tchi_\"st\":", chi_st)
+        print("\t\tZ_opt:", Z_opt)
+        print("\t\tTemperature:", myTimeStep.getData("IDAM_Temp", i))
+        
+        print("\tQ2DF2:")
+        Z3 = 1-Z1-Z2
+        Z_opt = 1-Z2
+        eta = Z3/(Z1+Z3)
+        xi = Z1+Z3
+        chi = chi22
+        chi_st = chi / er_func(Z_opt) * er_func(0.5)
+        print("\t\tOMIX, FMIX:", [0, 1, 0], [Z1/(Z1+Z3), 0, Z3/(Z1+Z3)])
+        print("\t\tchi_\"st\":", chi_st)
+        print("\t\tZ_opt:", Z_opt)
+        print("\t\tTemperature:", myTimeStep.getData("Temp", i))
+
 def runOnFlyAndQ2DF2():
     myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
     assert myTimeStep.getNumCells() == 1000
