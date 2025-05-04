@@ -55,12 +55,23 @@ class Q2DFGeneralizer:
                 #print("Candidates", i+1, j+1, optimal_x_candidates)
         
                 for x_candidate in optimal_x_candidates:
-                    chi_eta = self.get_chi_eta(Z1, Z2, chi11, chi12, chi22, x_candidate)
-                    chi_xi = self.get_chi_xi(Z1, Z2, chi11, chi12, chi22, x_candidate)
-                    chi_ratio = chi_eta / chi_xi
+                    new_x_candidate = x_candidate
+                    chi_ratio = self.get_chi_ratio(Z1, Z2, chi11, chi12, chi22, new_x_candidate)
 
+                    if np.isnan(chi_ratio) and (x_candidate == 0 or x_candidate == 1):
+                        small_perturbation = 0.0000000001
+                        if x_candidate == 0:
+                            new_x_candidate = small_perturbation
+                        if x_candidate == 1:
+                            new_x_candidate = 1 - small_perturbation
+                        
+                        chi_ratio = self.get_chi_ratio(Z1, Z2, chi11, chi12, chi22, new_x_candidate)
+                        # if not np.isnan(chi_ratio):
+                        #     print("WAS USEFUL")
+                        # else:
+                        #     print()
                     if not np.isnan(chi_ratio):
-                        optimal_mapping_candidates[float(chi_ratio)] = [i, j, x_candidate]
+                        optimal_mapping_candidates[float(chi_ratio)] = [i, j, new_x_candidate]
         
         #print("*********", optimal_mapping_candidates, "and", min(list(optimal_mapping_candidates.keys())))
         
@@ -116,6 +127,20 @@ class Q2DFGeneralizer:
         if complement_xi:
             Z_opt = 1 - Z_opt
             Z_stoic = 1 - Z_stoic
+        
+        q2df2_chi_ratio = self.get_chi_ratio(self.Z_CFD[0], self.Z_CFD[2], self.chi_CFD[0][0], self.chi_CFD[0][2], self.chi_CFD[2][2], 0.0000000001)#.00000000001)
+
+        xi_CFD = self.Z_CFD[0] + self.Z_CFD[2]
+        eta_CFD = self.Z_CFD[2] / (self.Z_CFD[0] + self.Z_CFD[2])
+        q2df2_chi_ratio_check = (self.chi_CFD[0][0] + 2*(1-eta_CFD)*self.chi_CFD[0][1] + (1-eta_CFD)**2*self.chi_CFD[1][1]) / (xi_CFD**2 * self.chi_CFD[1][1])
+        if abs(q2df2_chi_ratio - q2df2_chi_ratio_check) / q2df2_chi_ratio_check > 0.0001:
+            print("ALERT", q2df2_chi_ratio, q2df2_chi_ratio_check)
+
+        on_the_fly_chi_ratio = chi_eta / chi
+        if np.isnan(q2df2_chi_ratio) or np.isnan(on_the_fly_chi_ratio):
+            print("ISSUE ISSUE")
+        if q2df2_chi_ratio < on_the_fly_chi_ratio:
+            print("ISSUE", q2df2_chi_ratio, on_the_fly_chi_ratio)
 
         return OMIX, FMIX, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic
 
