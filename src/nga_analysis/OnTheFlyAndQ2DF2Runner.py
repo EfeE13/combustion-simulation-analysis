@@ -51,10 +51,13 @@ class OnTheFlyAndQ2DF2Runner:
     
             add_dicts(on_fly_data_dict, pdrs_run_data_on_fly, i)
             add_dicts(q2df_data_dict, pdrs_run_data_q2df2, i)
-            assert len(on_fly_data_dict[list(on_fly_data_dict.keys())[0]]) == i + 1 and len(q2df_data_dict[list(q2df_data_dict.keys())[0]]) == i + 1
+            if len(list(on_fly_data_dict.keys())) != 0:
+                assert len(on_fly_data_dict[list(on_fly_data_dict.keys())[0]]) == i + 1
+            if len(list(q2df_data_dict.keys())) != 0:
+                assert len(q2df_data_dict[list(q2df_data_dict.keys())[0]]) == i + 1
 
             with open(log_file, "a") as file:
-                file.write("\n" + str(i) + " below (On The Fly, then Q2DF2) " + "-"*30 + "\n" + str(pdrs_run_data_on_fly) + "\n" + str(pdrs_run_data_q2df2))
+                file.write("\npdrs_run_data_on_the_fly[" + str(i) + "] = " + str(pdrs_run_data_on_fly) + "\npdrs_run_data_q2df2[" + str(i) + "] = " + str(pdrs_run_data_q2df2) + "\n# " + "-" * 50)
         
         with open(log_file, "a") as file:
             file.write("\nTWO ENTIRE DICTIONARIES BELOW (On The Fly, then Q2DF2) " + "-"*30 + "\n" + str(on_fly_data_dict) + "\n" + str(q2df_data_dict))
