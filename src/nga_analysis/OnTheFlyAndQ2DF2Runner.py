@@ -47,6 +47,7 @@ class OnTheFlyAndQ2DF2Runner:
             inputs = {"CHI_REF":chi_ref, "OMIX1":"0.0", "OMIX2":"1.0", "OMIX3":"0.0", "FMIX1":FMIX[0], "FMIX2":FMIX[1], "FMIX3":FMIX[2]}
             name = "Q2DF2_" + "0"*(4-len(str(i))) + str(i) + "_"
             my_runnable = PDRsRunnableNonCartesian(constants.MANI_OF_INPUT, inputs, input_folder + "/" +  name + "Input", output_folder + "/" + name + "Output.Y", Z_opt)
+            my_runnable.make_input()
             pdrs_run_data_q2df2 = my_runnable.run_pdrs()
     
             add_dicts(on_fly_data_dict, pdrs_run_data_on_fly, i)

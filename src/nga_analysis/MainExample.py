@@ -352,7 +352,7 @@ def runOnFlyAndQ2DF2():
     assert myTimeStep.getNumCells() == 1000
     myTimeStep.addQuantity("5BasicVariables")
 
-    myTimeStep.shuffleData(constants.shuffling_timestep)
+    #myTimeStep.shuffleData(constants.shuffling_timestep)
     
     my_runner = OnTheFlyAndQ2DF2Runner(myTimeStep, "toluene", "air", "n-heptane")
     on_fly_data_dict, q2df_data_dict = my_runner.run_pdrs("/home/efeeroz/Documents/OnFlyVersusQ2DF/inputs_pdrs", "/home/efeeroz/Documents/OnFlyVersusQ2DF/outputs_pdrs", "/home/efeeroz/Documents/OnFlyVersusQ2DF/log.txt")
