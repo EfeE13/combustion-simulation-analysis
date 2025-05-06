@@ -6,6 +6,7 @@ from scipy.special import erfcinv
 
 from src.nga_analysis import constants
 from src.nga_analysis import utils
+from src.utils import utils as utilities
 from src.nga_analysis.TimeStep import TimeStep
 from src.utils.plotting_utils.DataPlot import DataPlot
 from src.nga_analysis.Q2DFGeneralizer import Q2DFGeneralizer
@@ -24,6 +25,7 @@ STORE_ALL_MODELS_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data
 STORE_MOD2_MOD3_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "Mod2Mod3ValidReduced"
 STORE_MANIQ2DF_REDUCED = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "ManiQ2DFValidReduced"
 STORE_IDAM_DATA = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "IDAMData"
+STORE_ON_FLY_DATA = "/home/efeeroz/Documents/CombustionModelAnalysis/data_storage/" + LABEL + "OnFlyData"
 
 INPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/inputs_pdrs/" + LABEL + "Zeta"
 OUTPUT_FOLDER_ZETA = "/home/efeeroz/Documents/CombustionModelAnalysis/outputs_pdrs/" + LABEL + "Zeta"
@@ -349,14 +351,67 @@ def getManualOnTheFlyTestingPoints():
 
 def runOnFlyAndQ2DF2():
     myTimeStep = TimeStep(utils.getInputFiles(STORE_ZMIX_TRIM_FEWER_POINTS), ALL_QUANTITIES, "000123", False)
-    assert myTimeStep.getNumCells() == 1000
+    assert myTimeStep.getNumCells() == 1000    
     myTimeStep.addQuantity("5BasicVariables")
 
     #myTimeStep.shuffleData(constants.shuffling_timestep)
     
     my_runner = OnTheFlyAndQ2DF2Runner(myTimeStep, "toluene", "air", "n-heptane")
-    on_fly_data_dict, q2df_data_dict = my_runner.run_pdrs("/home/efeeroz/Documents/OnFlyVersusQ2DF/inputs_pdrs", "/home/efeeroz/Documents/OnFlyVersusQ2DF/outputs_pdrs", "/home/efeeroz/Documents/OnFlyVersusQ2DF/log.txt")
+    on_fly_data_dict, q2df_data_dict = my_runner.run_pdrs("/home/efeeroz/Documents/OnFlyVersusQ2DF/inputs_pdrs", "/home/efeeroz/Documents/OnFlyVersusQ2DF/tiger3_outputs_pdrs", "/home/efeeroz/Documents/OnFlyVersusQ2DF/log.txt")
+    
+    print(on_fly_data_dict.keys())
+    print(q2df_data_dict.keys())
+    
+    on_fly_data_dict["Chi[1s]"] = copy.deepcopy(on_fly_data_dict["Chi[1/s]"])
+    q2df_data_dict["Chi[1s]"] = copy.deepcopy(q2df_data_dict["Chi[1/s]"])
+    plotting_vars = ["Chi[1s]", "T[K]", "Y-CO2", "Y-CO", "Y-OH"]
+    
+    for var in plotting_vars:
+        q2df2_list = q2df_data_dict[var]
+        on_fly_list = on_fly_data_dict[var]
+        
+        myTimeStep.addQuantity("Q2DF2_" + var, q2df2_list)
+        myTimeStep.addQuantity("OnFly_" + var, on_fly_list)
+    
+    print("First number cells:", myTimeStep.getNumCells())
+    myTimeStep.removeCellsWithValue("Q2DF2_" + plotting_vars[0], "NA", "eqexact")
+    myTimeStep.removeCellsWithValue("OnFly_" + plotting_vars[0], "NA", "eqexact")
+    old_num_cells = myTimeStep.getNumCells()
+    for var in plotting_vars:
+        myTimeStep.removeCellsWithValue("Q2DF2_" + var, "NA", "eqexact")
+        myTimeStep.removeCellsWithValue("OnFly_" + var, "NA", "eqexact")
+        try:
+            a_val = myTimeStep.getData("Q2DF2_" + var, 0) + 3
+            b_val = myTimeStep.getData("OnFly_" + var, 0) + 3
+        except:
+            print(myTimeStep.getData("Q2DF2_" + var, 0), myTimeStep.getData("OnFly_" + var, 0), var, "WRONG")
+    assert myTimeStep.getNumCells() == old_num_cells
+    
+    print("Number cells left:", myTimeStep.getNumCells())
+    
+    for var in plotting_vars:
+        q2df2_list = np.array(myTimeStep.getDataList("Q2DF2_" + var))
+        on_fly_list = np.array(myTimeStep.getDataList("OnFly_" + var))
+        myTimeStep.addQuantity("OnFlyDiffLogMod_" + var, utilities.log_modulus(on_fly_list - q2df2_list))
+        myTimeStep.addQuantity("OnFlyPerDiffLogMod_" + var, utilities.log_modulus(100 * (on_fly_list - q2df2_list) / q2df2_list))
 
+    myTimeStep.storeData(STORE_ON_FLY_DATA)
+    print(myTimeStep.getQuantities())
+
+def plotOnFlyAndQ2DF2():
+    plotting_vars = ["Chi[1s]", "T[K]", "Y-CO2", "Y-CO", "Y-OH"]
+    ON_FLY_ALL_QUANTITIES = ALL_QUANTITIES
+    for prefix in ["Q2DF2_", "OnFly_", "OnFlyDiffLogMod_", "OnFlyPerDiffLogMod_"]:
+        ON_FLY_ALL_QUANTITIES += [prefix + var for var in plotting_vars]
+    myTimeStep = TimeStep(utils.getInputFiles(STORE_ON_FLY_DATA), ON_FLY_ALL_QUANTITIES, "000123", False)
+
+    folderLoc = "/home/efeeroz/Documents/CombustionModelAnalysis/graphs/25_05_05_ontheflystrategy"
+    
+    for prefix in ["Q2DF2_", "OnFly_", "OnFlyDiffLogMod_", "OnFlyPerDiffLogMod_"]:
+        for var in plotting_vars:
+            quantity = prefix + var
+            utils.makeAndSaveFigure(myTimeStep, "ZMIX", "FMIX", "$Z$", "$F$", quantity, folderLoc + "/" + quantity + ".pdf", zVar = quantity)
+    
 '''
 Make sure to change:
 - Change DESIRED_NUM_CELLS
@@ -377,4 +432,5 @@ if __name__ == "__main__":
     #plotNonIDAMOutput()
 
     #getManualOnTheFlyTestingPoints()
-    runOnFlyAndQ2DF2()
+    # runOnFlyAndQ2DF2()
+    plotOnFlyAndQ2DF2()

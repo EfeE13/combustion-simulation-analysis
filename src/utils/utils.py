@@ -38,3 +38,6 @@ def dayAndTime() -> str:
 
 def er_func(Z:float) -> float:
     return float(np.exp(-2 * erfcinv(2*Z)**2))
+
+def log_modulus(x_list):
+    return np.sign(x_list) * np.log1p(np.abs(x_list)) / np.log(10)

@@ -105,7 +105,7 @@ class TimeStep:
             outputFile.write(outputFileContents.strip())
             outputFile.close()
 
-    def addQuantity(self, quantity:str) -> None:
+    def addQuantity(self, quantity:str, quantityList = ["None"]) -> None:
         """A large part of the TimeStep object's functionality. Is used to compute new quantities from the existing ones
 
         :param str quantity: the quantity to be added (the formula for which must be given inside this function)
@@ -113,6 +113,11 @@ class TimeStep:
 
         if quantity in self.getQuantities():
             raise ValueError(quantity + " already in the data.")
+        
+        if len(quantityList) > 0 and quantityList[0] != "None":
+            self.data[quantity] = quantityList
+            self.__assertNumCellsCorrect()
+            return
 
         # Some quantities commonly used in the below formulas that may be useful to have on hand:
         ZSTAR = np.array(self.getDataList("ZSTAR"))
@@ -219,17 +224,17 @@ class TimeStep:
                 chi_ratio_list.append((chi_eta / chi) / (chi_eta / chi + 1))
             self.data[quantity] = x_prime_list
             self.data["xPrimeChiRatioNorm"] = chi_ratio_list
-        elif quantity in ['IDAM_RHO', 'IDAM_DIFF', 'IDAM_VISC', 'IDAM_Temp', 'IDAM_Y_CO2', 'IDAM_Y_O2', 'IDAM_Y_CO', 'IDAM_Y_H2O', 'IDAM_Y_H2', 'IDAM_Y_OH']:
-            assert(len(constants.IDAM_data_dict[quantity])) == 1000
-            self.data[quantity] = constants.IDAM_data_dict[quantity]
-        elif quantity in ['IDAM_RHO_diff', 'IDAM_DIFF_diff', 'IDAM_VISC_diff', 'IDAM_Temp_diff', 'IDAM_Y_CO2_diff', 'IDAM_Y_O2_diff', 'IDAM_Y_CO_diff', 'IDAM_Y_H2O_diff', 'IDAM_Y_H2_diff', 'IDAM_Y_OH_diff']:
-            self.data[quantity] = []
-            for i in range(self.getNumCells()):
-                self.data[quantity].append(float(np.log10(abs(float(self.getData(quantity[:-5], i)) - float(self.getData(quantity[5:-5], i))))))
-        elif quantity in ['IDAM_RHO_percent', 'IDAM_DIFF_percent', 'IDAM_VISC_percent', 'IDAM_Temp_percent', 'IDAM_Y_CO2_percent', 'IDAM_Y_O2_percent', 'IDAM_Y_CO_percent', 'IDAM_Y_H2O_percent', 'IDAM_Y_H2_percent', 'IDAM_Y_OH_percent']:
-            self.data[quantity] = []
-            for i in range(self.getNumCells()):
-                self.data[quantity].append(float(np.log10(abs((float(self.getData(quantity[:-8], i)) / float(self.getData(quantity[5:-8], i)) - 1) * 100))))
+        # elif quantity in ['IDAM_RHO', 'IDAM_DIFF', 'IDAM_VISC', 'IDAM_Temp', 'IDAM_Y_CO2', 'IDAM_Y_O2', 'IDAM_Y_CO', 'IDAM_Y_H2O', 'IDAM_Y_H2', 'IDAM_Y_OH']:
+        #     assert(len(constants.IDAM_data_dict[quantity])) == 1000
+        #     self.data[quantity] = constants.IDAM_data_dict[quantity]
+        # elif quantity in ['IDAM_RHO_diff', 'IDAM_DIFF_diff', 'IDAM_VISC_diff', 'IDAM_Temp_diff', 'IDAM_Y_CO2_diff', 'IDAM_Y_O2_diff', 'IDAM_Y_CO_diff', 'IDAM_Y_H2O_diff', 'IDAM_Y_H2_diff', 'IDAM_Y_OH_diff']:
+        #     self.data[quantity] = []
+        #     for i in range(self.getNumCells()):
+        #         self.data[quantity].append(float(np.log10(abs(float(self.getData(quantity[:-5], i)) - float(self.getData(quantity[5:-5], i))))))
+        # elif quantity in ['IDAM_RHO_percent', 'IDAM_DIFF_percent', 'IDAM_VISC_percent', 'IDAM_Temp_percent', 'IDAM_Y_CO2_percent', 'IDAM_Y_O2_percent', 'IDAM_Y_CO_percent', 'IDAM_Y_H2O_percent', 'IDAM_Y_H2_percent', 'IDAM_Y_OH_percent']:
+        #     self.data[quantity] = []
+        #     for i in range(self.getNumCells()):
+        #         self.data[quantity].append(float(np.log10(abs((float(self.getData(quantity[:-8], i)) / float(self.getData(quantity[5:-8], i)) - 1) * 100))))
         elif quantity in ["5BasicVariables"]:
             self.data["Z1"] = copy.deepcopy(self.getDataList("ZSTAR"))
             self.data["Z2"] = copy.deepcopy([1 - elm for elm in self.getDataList("ZMIX")])
