@@ -665,8 +665,9 @@ class TimeStep:
         if len(cellsToRemove) > 0:
             assert max(cellsToRemove) <= self.getNumCells() - 1
         self.__assertNumCellsCorrect()
+        num_cells = self.getNumCells()
         for quantity in self.getQuantities():
-            self.data[quantity] = np.delete(np.array(self.data[quantity]), cellsToRemove).tolist()
+            self.data[quantity] = [self.data[quantity][i] for i in range(num_cells) if i not in cellsToRemove]
 
         self.__assertNumCellsCorrect()
     
