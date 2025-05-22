@@ -19,4 +19,4 @@ In addition to the source code, one should have:
 - graphs directory to store generated graphs
 - some well-known Python libraries (e.g., `numpy`, `matplotlib`, `scipy`, `math`, `copy`, `struct`, `random`, `subprocess`, `os`, `itertools`, `time`)
 
-**Note:** `main` file examples will be included.
+**Note:** `main` file examples are included. If viewing on GitHub, the *contributors* and *languages* sections may not display properly (mistakenly set remote tracking connection for another repo to this GitHub repo and some info hasn't updated after fix).
