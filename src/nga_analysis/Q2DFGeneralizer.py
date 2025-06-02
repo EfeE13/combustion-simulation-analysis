@@ -284,7 +284,7 @@ def unit_test_fortran():
     OMIX1_list = []; OMIX2_list = []; OMIX3_list = []; FMIX1_list = []; FMIX2_list = []; FMIX3_list = []
     for i, test_set in enumerate(list_inputs):
         Z1, Z2, chi11, chi12, chi22 = test_set
-        OMIX, FMIX, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic = Q2DFGeneralizer(Z1, Z2, chi11, chi12, chi22, "toluene", "air", "n-heptane", i+1).get_optimal_mapping()
+        OMIX, FMIX, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic = Q2DFGeneralizer(Z1, Z2, chi11, chi12, chi22, "toluene", "air", "n-heptane").get_optimal_mapping()
 
         Z1, Z2, chi11, chi12, chi22, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic, OMIX1, OMIX2, OMIX3, FMIX1, FMIX2, FMIX3 = [str(float(i)) + "_WP" for i in [Z1, Z2, chi11, chi12, chi22, chi, chi_eta, x_prime, eta, Z_opt, Z_stoic, OMIX[0], OMIX[1], OMIX[2], FMIX[0], FMIX[1], FMIX[2]]]
         Z1_CFD_list.append(Z1); Z2_CFD_list.append(Z2); chi11_CFD_list.append(chi11); chi12_CFD_list.append(chi12); chi22_CFD_list.append(chi22)
